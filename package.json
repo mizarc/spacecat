@@ -5,8 +5,8 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "start": "tsx src/index.ts"
+    "dev": "node --env-file=.env ./node_modules/tsx/dist/cli.mjs watch src/index.ts",
+    "start": "node --env-file=.env ./node_modules/tsx/dist/cli.mjs src/index.ts"
   },
   "keywords": [],
   "author": "Mizarc <contact@mizarc.dev>",
