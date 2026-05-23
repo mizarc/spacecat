@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, type Message } from 'discord.js';
+import { Client, GatewayIntentBits, type Message, Events } from 'discord.js';
 import type { UnifiedMessage } from '../core/types.js';
 import { handleIncomingMessage } from '../core/router.js';
 
@@ -11,25 +11,29 @@ export function startDiscordBot() {
     ],
   });
 
-  client.on('messageCreate', async (msg: Message) => {
-    // Ignore bot messages to prevent infinite loops
-    if (msg.author.bot) return;
+  client.on(Events.InteractionCreate, async (interaction) => {
+    if (!interaction.isChatInputCommand()) return;
 
     // Map to UnifiedMessage
     const unified: UnifiedMessage = {
-      id: msg.id,
-      content: msg.content,
-      userId: msg.author.id,
-      username: msg.author.username,
-      channelId: msg.channelId,
+      id: interaction.id,
+      content: interaction.commandName,
+      userId: interaction.user.id,
+      username: interaction.user.username,
+      channelId: interaction.channelId,
       platform: 'discord',
+      interaction: interaction,
       reply: async (text) => {
-        await msg.reply(text);
+        if (interaction.deferred || interaction.replied) {
+          await interaction.editReply(text);
+        } else {
+          await interaction.reply(text);
+        }
       }
     };
 
     // Send to Router
-    await handleIncomingMessage(unified, false);
+    await handleIncomingMessage(unified, true);
   });
 
   client.login(process.env.DISCORD_TOKEN);

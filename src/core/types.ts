@@ -1,4 +1,5 @@
 // src/core/types.ts
+import type { ChatInputCommandInteraction } from 'discord.js';
 
 export interface UnifiedMessage {
   id: string;
@@ -6,6 +7,7 @@ export interface UnifiedMessage {
   userId: string;
   username: string;
   channelId: string;
+  interaction?: ChatInputCommandInteraction;
   platform: 'discord' | 'fluxer';
   
   /**
