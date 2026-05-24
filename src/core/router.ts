@@ -1,8 +1,10 @@
 import type { BotCommand, UnifiedMessage } from './types.js';
 import { PingCommand } from './commands/ping.js';
+import { WikiCommand } from './commands/wiki.js';
 
 const commands = new Map<string, BotCommand>();
 commands.set(PingCommand.name, PingCommand);
+commands.set(WikiCommand.name, WikiCommand);
 
 /**
  * The Router: Now handles both text-based parsing and pre-parsed slash commands.
@@ -15,13 +17,18 @@ export async function handleIncomingMessage(
   let args: string[] = [];
 
   if (isSlashCommand) {
-    // Slash command: Use the content as the command name directly.
-    commandName = message.content.toLowerCase();
+    // Slash command: Extract command name and arguments from interaction options.
+    commandName = message.interaction?.commandName.toLowerCase() || '';
+    if (message.interaction?.options) {
+      args = message.interaction.options.data.map(opt => opt.value?.toString() || '').filter(v => v);
+    }
   } else {
     // Legacy Command: Strip the prefix and parse the command.
     const PREFIX = '!';
     if (!message.content.startsWith(PREFIX)) return;
-    commandName = message.content.slice(PREFIX.length).trim().split(/ +/)[0]?.toLowerCase() ?? '';
+    const content = message.content.slice(1).trim().split(/ +/);
+    commandName = content.shift() || '';
+    args = content.length ? content : [];
   }
 
   if (!commandName) return;
