@@ -20,7 +20,7 @@ export const ThesaurusCommand: BotCommand = {
   }
 };
 
-async function getThesaurus(word: string) {
+export async function getThesaurus(word: string) {
   const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word.toLowerCase())}`;
 
   const res = await fetch(url);

@@ -10,7 +10,7 @@ const commandsDir = join(__dirname, 'commands');
 async function loadCommands(): Promise<Map<string, BotCommand>> {
   const commands = new Map<string, BotCommand>();
   const files = readdirSync(commandsDir).filter(
-    (file) => extname(file) === '.ts' && file !== 'index.ts'
+    (file) => extname(file) === '.ts' && file !== 'index.ts' && !file.endsWith('.test.ts')
   );
 
   for (const file of files) {
