@@ -8,6 +8,6 @@ export const PingCommand: BotCommand = {
     const startTime = performance.now();
     await message.reply('Calculating latency...');
     const latency = Math.round(performance.now() - startTime);
-    await message.edit(`Pong! Bot latency is: **${latency}ms**`);
+    await message.edit(`🏓 Pong! Bot latency is: **${latency}ms**`);
   }
 };
