@@ -20,12 +20,14 @@
     "@fluxerjs/core": "^1.3.1",
     "discord.js": "^14.26.4",
     "mathjs": "^15.2.0",
+    "qrcode": "^1.5.4",
     "sharp": "^0.34.5",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
+    "@types/qrcode": "^1.5.6",
     "@types/sharp": "^0.31.1",
     "vitest": "^4.1.7"
   }
