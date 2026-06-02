@@ -42,7 +42,19 @@ export function startFluxerBot() {
       userId: message.author.id,
       username: message.author.username,
       channelId: message.channelId,
+      avatarUrl: message.author.displayAvatarURL({ size: 1024 }),
       platform: 'fluxer',
+      fetchUser: async (userId) => {
+        try {
+          const user = await client.users.fetch(userId);
+          return {
+            username: user.username,
+            avatarUrl: user.displayAvatarURL({ size: 1024 }),
+          };
+        } catch {
+          return null;
+        }
+      },
       reply: async (response) => {
         if (typeof response === 'string') {
           const reply = await message.reply(response);

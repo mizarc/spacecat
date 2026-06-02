@@ -23,6 +23,12 @@ export interface UnifiedMessage {
   userId: string;
   username: string;
   channelId: string;
+  avatarUrl?: string;
+  /**
+   * Fetches a user's username and avatar URL by their ID.
+   * Returns null if the user cannot be found.
+   */
+  fetchUser?: (userId: string) => Promise<{ username: string; avatarUrl: string } | null>;
   interaction?: ChatInputCommandInteraction;
   platform: 'discord' | 'fluxer';
   

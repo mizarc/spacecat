@@ -21,8 +21,20 @@ export function startDiscordBot() {
       userId: interaction.user.id,
       username: interaction.user.username,
       channelId: interaction.channelId,
+      avatarUrl: interaction.user.displayAvatarURL({ size: 1024 }),
       platform: 'discord',
       interaction: interaction,
+      fetchUser: async (userId) => {
+        try {
+          const user = await interaction.client.users.fetch(userId);
+          return {
+            username: user.username,
+            avatarUrl: user.displayAvatarURL({ size: 1024 }),
+          };
+        } catch {
+          return null;
+        }
+      },
       reply: async (response) => {
         if (typeof response === 'string') {
           if (interaction.deferred || interaction.replied) {
