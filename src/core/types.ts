@@ -1,6 +1,22 @@
 // src/core/types.ts
 import type { ChatInputCommandInteraction } from 'discord.js';
 
+export interface ReplyEmbed {
+  title?: string;
+  description?: string;
+  color?: number;
+  fields?: { name: string; value: string; inline?: boolean }[];
+  thumbnail?: { url: string };
+  image?: { url: string };
+  footer?: { text: string };
+}
+
+export interface ReplyOptions {
+  content: string;
+  files?: Buffer[];
+  embeds?: ReplyEmbed[];
+}
+
 export interface UnifiedMessage {
   id: string;
   content: string;
@@ -12,8 +28,9 @@ export interface UnifiedMessage {
   
   /**
    * Universal method to send a reply back to the originating platform.
+   * Accepts plain text or an object with content and optional file buffers.
    */
-  reply: (content: string) => Promise<any>;
+  reply: (response: string | ReplyOptions) => Promise<any>;
 
   /**
    * Universal method to edit the last sent reply.

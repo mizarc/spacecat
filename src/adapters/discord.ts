@@ -23,12 +23,28 @@ export function startDiscordBot() {
       channelId: interaction.channelId,
       platform: 'discord',
       interaction: interaction,
-      reply: async (text) => {
-        if (interaction.deferred || interaction.replied) {
-          return await interaction.editReply(text);
-        } else {
-          return await interaction.reply(text);
+      reply: async (response) => {
+        if (typeof response === 'string') {
+          if (interaction.deferred || interaction.replied) {
+            return await interaction.editReply(response);
+          }
+          return await interaction.reply(response);
         }
+        const opts: Record<string, unknown> = {};
+        opts.content = response.content;
+        if (response.files?.length) {
+          opts.files = response.files.map((f) => ({
+            attachment: f,
+            name: 'image.png',
+          }));
+        }
+        if (response.embeds?.length) {
+          opts.embeds = response.embeds;
+        }
+        if (interaction.deferred || interaction.replied) {
+          return await interaction.editReply(opts);
+        }
+        return await interaction.reply(opts);
       },
       edit: async (text) => {
         return await interaction.editReply(text);

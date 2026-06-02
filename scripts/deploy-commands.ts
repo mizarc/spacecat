@@ -11,6 +11,14 @@ const commands = [
     option.setName('query')
       .setDescription('The topic to search for')
       .setRequired(true) // Force the user to provide a search term
+    ),
+  new SlashCommandBuilder()
+    .setName('color')
+    .setDescription('Shows a color preview with RGB, HSL, and CMYK values.')
+    .addStringOption(option => 
+    option.setName('hex')
+      .setDescription('The hex color to display')
+      .setRequired(true)
     )
 ];
 

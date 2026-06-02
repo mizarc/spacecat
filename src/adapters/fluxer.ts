@@ -1,7 +1,28 @@
-import { Client } from '@fluxerjs/core';
-import type { UnifiedMessage } from '../core/types.js';
+import { Client, EmbedBuilder, Events } from '@fluxerjs/core';
+import type { UnifiedMessage, ReplyEmbed } from '../core/types.js';
 import { handleIncomingMessage } from '../core/router.js';
-import { Events } from 'discord.js';
+
+function toFluxerEmbeds(embeds: ReplyEmbed[]): EmbedBuilder[] {
+  return embeds.map((e) => {
+    const embed = new EmbedBuilder();
+    if (e.title) embed.setTitle(e.title);
+    if (e.description) embed.setDescription(e.description);
+    if (e.color !== undefined) embed.setColor(e.color);
+    if (e.fields) {
+      embed.addFields(
+        ...e.fields.map((f) => ({
+          name: f.name,
+          value: f.value,
+          inline: f.inline ?? false,
+        })),
+      );
+    }
+    if (e.thumbnail) embed.setThumbnail(e.thumbnail.url);
+    if (e.image) embed.setImage(e.image.url);
+    if (e.footer) embed.setFooter({ text: e.footer.text });
+    return embed;
+  });
+}
 
 export function startFluxerBot() {
   const client = new Client({ intents: 0 });
@@ -22,8 +43,24 @@ export function startFluxerBot() {
       username: message.author.username,
       channelId: message.channelId,
       platform: 'fluxer',
-      reply: async (text) => {
-        const reply = await message.reply(text);
+      reply: async (response) => {
+        if (typeof response === 'string') {
+          const reply = await message.reply(response);
+          messageCache.set(conversationId, reply);
+          return reply;
+        }
+        const opts: Record<string, unknown> = {};
+        if (response.content) opts.content = response.content;
+        if (response.embeds?.length) {
+          opts.embeds = toFluxerEmbeds(response.embeds);
+        }
+        if (response.files?.length) {
+          opts.files = response.files.map((f) => ({
+            data: f,
+            name: 'image.png',
+          }));
+        }
+        const reply = await message.reply(opts);
         messageCache.set(conversationId, reply);
         return reply;
       }
