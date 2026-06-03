@@ -67,10 +67,12 @@ export function startFluxerBot() {
           opts.embeds = toFluxerEmbeds(response.embeds);
         }
         if (response.files?.length) {
-          opts.files = response.files.map((f) => ({
-            data: f,
-            name: 'image.png',
-          }));
+          opts.files = response.files.map((f) => {
+            if ('name' in f) {
+              return { data: f.data, name: f.name };
+            }
+            return { data: f, name: 'image.png' };
+          });
         }
         const reply = await message.reply(opts);
         messageCache.set(conversationId, reply);

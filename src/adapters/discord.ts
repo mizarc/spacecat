@@ -45,10 +45,12 @@ export function startDiscordBot() {
         const opts: Record<string, unknown> = {};
         opts.content = response.content;
         if (response.files?.length) {
-          opts.files = response.files.map((f) => ({
-            attachment: f,
-            name: 'image.png',
-          }));
+          opts.files = response.files.map((f) => {
+            if ('name' in f) {
+              return { attachment: f.data, name: f.name };
+            }
+            return { attachment: f, name: 'image.png' };
+          });
         }
         if (response.embeds?.length) {
           opts.embeds = response.embeds;

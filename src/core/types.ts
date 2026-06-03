@@ -13,7 +13,7 @@ export interface ReplyEmbed {
 
 export interface ReplyOptions {
   content: string;
-  files?: Buffer[];
+  files?: (Buffer | { name: string; data: Buffer })[];
   embeds?: ReplyEmbed[];
 }
 
