@@ -97,6 +97,11 @@ export function startFluxerBot() {
     await handleIncomingMessage(unified, false);
   });
 
+  // Gracefully handle connection drops (sleep/wake, network blips)
+  client.on('error', (err: Error) => {
+    console.warn('[FLUXER] Connection error (will auto-reconnect):', err.message);
+  });
+
   const fluxerToken = process.env.FLUXER_TOKEN;
   if (!fluxerToken) {
     console.error("FLUXER_TOKEN is not defined in .env");
