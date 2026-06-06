@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Local runtime data (SQLite databases, cache, etc.)
+data/
+
+# Environment files (use --env-file or docker-compose env_file)
+.env
+.env.local
+.env.*.local
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files (not needed at runtime)
+**/*.test.ts
+
+# Docker files (not needed inside the image)
+Dockerfile
+.dockerignore
+docker-compose.yml

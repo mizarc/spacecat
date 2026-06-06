@@ -1,7 +1,7 @@
 {
   "system": {
     "starting": "Spacecat is starting...",
-    "missingTokens": "Missing required tokens in .env",
+    "missingToken": "Missing required {adapter} token in .env",
     "allAdaptersConnected": "All adapters connected.",
     "loadedCommand": "Loaded command: {name} ({category})",
     "failedLoadCommand": "Failed to load command from {file}:",
