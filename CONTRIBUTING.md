@@ -4,7 +4,6 @@ Thanks for your interest in contributing! Whether it's fixing a bug, adding a co
 
 ## Table of Contents
 
-- [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
 - [Project Structure](#project-structure)
 - [Development Workflow](#development-workflow)
@@ -15,10 +14,6 @@ Thanks for your interest in contributing! Whether it's fixing a bug, adding a co
 - [Commit Messages](#commit-messages)
 - [Pull Request Process](#pull-request-process)
 - [Docker](#docker)
-
-## Code of Conduct
-
-Please be respectful and constructive. This project is intended to be a welcoming space for contributors of all experience levels. Harassment, trolling, and toxic behaviour will not be tolerated.
 
 ## Getting Started
 
