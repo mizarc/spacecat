@@ -5,7 +5,7 @@ import { dirname } from 'path';
 import type { ReminderStore, Reminder, Platform } from './reminderStore.js';
 
 export interface SqliteReminderStoreOptions {
-  /** Path to the SQLite database file. Defaults to `data/spacecat.db`. */
+  /** Path to the SQLite database file. Defaults to `data/astrokat.db`. */
   dbPath?: string;
 }
 
@@ -22,7 +22,7 @@ export class SqliteReminderStore implements ReminderStore {
   private readonly db: Database.Database;
 
   constructor(options?: SqliteReminderStoreOptions) {
-    const dbPath = options?.dbPath ?? resolve('data', 'spacecat.db');
+    const dbPath = options?.dbPath ?? resolve('data', 'astrokat.db');
 
     const dir = dirname(dbPath);
     if (!existsSync(dir)) {

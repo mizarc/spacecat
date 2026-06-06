@@ -1,6 +1,6 @@
 {
   "system": {
-    "starting": "Spacecat is starting...",
+    "starting": "Astrokat is starting...",
     "missingToken": "Missing required {adapter} token in .env",
     "allAdaptersConnected": "All adapters connected.",
     "loadedCommand": "Loaded command: {name} ({category})",

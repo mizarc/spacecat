@@ -1,4 +1,4 @@
-# SPACECAT — A Chat Bot for All
+# Astrokat — A Chat Bot for All
 
 A multi-platform chat bot that runs on **Discord** and **Fluxer** with a shared command system and persistent reminders.
 
@@ -21,7 +21,7 @@ A multi-platform chat bot that runs on **Discord** and **Fluxer** with a shared 
    ```bash
    docker compose up
    ```
-   This runs Spacecat with SQLite storage — no databases to manage.
+   This runs Astrokat with SQLite storage — no databases to manage.
 
 ### Start with PostgreSQL
 

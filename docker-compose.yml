@@ -1,5 +1,5 @@
 # =============================================================================
-# Spacecat — Docker Compose
+# Astrokat — Docker Compose
 #
 # Choose your backend:
 #   docker compose up                  # SQLite (default, no external deps)
@@ -13,9 +13,9 @@
 
 services:
   # ── SQLite profile (standalone — no external services needed) ──────────────
-  spacecat-sqlite:
+  astrokat-sqlite:
     build: .
-    container_name: spacecat
+    container_name: astrokat-sqlite
     env_file:
       - path: .env
         required: true
@@ -25,22 +25,22 @@ services:
       # Omit DATABASE_URL → reminder service uses SQLite automatically
     volumes:
       # Persist the SQLite database file across container restarts
-      - spacecat-data:/app/data
+      - astrokat-data:/app/data
     restart: unless-stopped
     profiles:
       - sqlite
       - default   # start with plain `docker compose up`
 
   # ── PostgreSQL profile (clustered / multi-instance) ────────────────────────
-  spacecat-postgres:
+  astrokat-postgres:
     build: .
-    container_name: spacecat
+    container_name: astrokat-postgres
     env_file:
       - path: .env
         required: true
     environment:
       - ADAPTERS=${ADAPTERS:-discord,fluxer}
-      - DATABASE_URL=postgresql://spacecat:spacecat@postgres:5432/spacecat
+      - DATABASE_URL=postgresql://astrokat:astrokat@postgres:5432/astrokat
     depends_on:
       postgres:
         condition: service_healthy
@@ -50,15 +50,15 @@ services:
 
   postgres:
     image: postgres:17-alpine
-    container_name: spacecat-postgres
+    container_name: astrokat-postgres
     environment:
-      POSTGRES_DB: spacecat
-      POSTGRES_USER: spacecat
-      POSTGRES_PASSWORD: spacecat
+      POSTGRES_DB: astrokat
+      POSTGRES_USER: astrokat
+      POSTGRES_PASSWORD: astrokat
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U spacecat"]
+      test: ["CMD-SHELL", "pg_isready -U astrokat"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -67,5 +67,5 @@ services:
       - postgres
 
 volumes:
-  spacecat-data:
+  astrokat-data:
   postgres-data:
