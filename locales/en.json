@@ -68,6 +68,29 @@
     "diceroll": {
       "result": "🎲 You rolled a {result}!"
     },
+    "8ball": {
+      "noQuestion": "🎱 Please ask a yes/no question.\nUsage: `!8ball Will I win the lottery?`",
+      "result": "🎱 {response}",
+      "responseItIsCertain": "It is certain.",
+      "responseItIsDecidedlySo": "It is decidedly so.",
+      "responseWithoutADoubt": "Without a doubt.",
+      "responseYesDefinitely": "Yes definitely.",
+      "responseYouMayRelyOnIt": "You may rely on it.",
+      "responseAsISeeItYes": "As I see it, yes.",
+      "responseMostLikely": "Most likely.",
+      "responseOutlookGood": "Outlook is good.",
+      "responseYes": "Yes.",
+      "responseReplyHazy": "Reply hazy, try again.",
+      "responseAskAgainLater": "Ask again later.",
+      "responseBetterNotTell": "Better not tell you now.",
+      "responseCannotPredict": "Cannot predict now.",
+      "responseConcentrate": "Concentrate and ask again.",
+      "responseDontCountOnIt": "Don't count on it.",
+      "responseMyReplyIsNo": "My reply is no.",
+      "responseMySourcesSayNo": "My sources say no.",
+      "responseOutlookNotSoGood": "Outlook not so good.",
+      "responseVeryDoubtful": "Very doubtful."
+    },
     "slap": {
       "userNotFound": "❌ Could not find that user.",
       "avatarNotFound": "❌ Could not retrieve avatar.",
@@ -158,6 +181,8 @@
     "currencyFromDescription": "The source currency code (e.g. USD)",
     "currencyToDescription": "The target currency code (e.g. EUR)",
     "issDescription": "Shows the current position of the ISS and its crew.",
+    "8ballDescription": "Ask the Magic 8-Ball a yes/no question.",
+    "8ballQuestionDescription": "The question to ask the 8-Ball",
     "pingDescription": "Replies with Pong!",
     "wikiDescription": "Fetches Wikipedia information.",
     "wikiQueryDescription": "The topic to search for",

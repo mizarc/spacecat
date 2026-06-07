@@ -32,6 +32,14 @@ const commands = [
         .setRequired(true)
     ),
   new SlashCommandBuilder()
+    .setName('8ball')
+    .setDescription(t('deploy.8ballDescription'))
+    .addStringOption(option =>
+      option.setName('question')
+        .setDescription(t('deploy.8ballQuestionDescription'))
+        .setRequired(true)
+    ),
+  new SlashCommandBuilder()
     .setName('ping')
     .setDescription(t('deploy.pingDescription')),
   new SlashCommandBuilder()
