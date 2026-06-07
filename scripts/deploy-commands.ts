@@ -3,6 +3,24 @@ import { t } from '../src/core/i18n.js';
 
 const commands = [
   new SlashCommandBuilder()
+    .setName('currency')
+    .setDescription(t('deploy.currencyDescription'))
+    .addNumberOption(option =>
+      option.setName('amount')
+        .setDescription(t('deploy.currencyAmountDescription'))
+        .setRequired(true)
+    )
+    .addStringOption(option =>
+      option.setName('from')
+        .setDescription(t('deploy.currencyFromDescription'))
+        .setRequired(true)
+    )
+    .addStringOption(option =>
+      option.setName('to')
+        .setDescription(t('deploy.currencyToDescription'))
+        .setRequired(true)
+    ),
+  new SlashCommandBuilder()
     .setName('define')
     .setDescription(t('deploy.defineDescription'))
     .addStringOption(option =>

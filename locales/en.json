@@ -97,6 +97,14 @@
       "parseError": "Invalid hex color. Use format like FF5733 or #FF5733.",
       "formatted": "**{hex}**\n• RGB:  {rgb}\n• HSL:  {hsl}\n• CMYK: {cmyk}"
     },
+    "currency": {
+      "noInput": "❌ Please provide an amount, source currency, and target currency.\nUsage: `!currency 100 usd eur`",
+      "invalidAmount": "❌ Invalid amount. Please provide a positive number.",
+      "converting": "Converting {amount} {from} → {to}",
+      "result": "💱 **{amount} {from}** = **{result} {to}**\n*(Rate: 1 {from} = {rate} {to})*",
+      "error": "An error occurred while fetching exchange rates.",
+      "errorDetail": "❌ {detail}"
+    },
     "echo": {
       "noInput": "❌ Please provide something to echo.\nUsage: `!echo Hello, world!`"
     },
@@ -134,6 +142,10 @@
   "deploy": {
     "defineDescription": "Fetches definitions and examples for a word.",
     "defineWordDescription": "The word to look up",
+    "currencyDescription": "Converts an amount from one currency to another.",
+    "currencyAmountDescription": "The amount to convert",
+    "currencyFromDescription": "The source currency code (e.g. USD)",
+    "currencyToDescription": "The target currency code (e.g. EUR)",
     "pingDescription": "Replies with Pong!",
     "wikiDescription": "Fetches Wikipedia information.",
     "wikiQueryDescription": "The topic to search for",
