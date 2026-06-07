@@ -157,6 +157,12 @@ export function startDiscordBot() {
       edit: async (text) => {
         return await interaction.editReply(text);
       },
+      setStatus: async (text) => {
+        await client.user?.setPresence({
+          activities: [{ name: text, type: 4 }],
+          status: 'online',
+        });
+      },
     };
 
     // Send to Router

@@ -1,5 +1,5 @@
 import { t } from '../core/i18n.js';
-import { Client, EmbedBuilder, Events, PermissionFlags } from '@fluxerjs/core';
+import { Client, EmbedBuilder, Events, PermissionFlags, GatewayOpcodes } from '@fluxerjs/core';
 import type { UnifiedMessage, UnifiedAuthor, UnifiedChannel, ReplyEmbed } from '../core/types.js';
 import { handleIncomingMessage } from '../core/router.js';
 import { reminderService } from '../core/services/reminders/reminderService.js';
@@ -15,7 +15,7 @@ function toFluxerEmbeds(embeds: ReplyEmbed[]): EmbedBuilder[] {
         ...e.fields.map((f) => ({
           name: f.name,
           value: f.value,
-          inline: f.inline ?? false,
+          inline: f.inline ?? false,  
         })),
       );
     }
@@ -134,6 +134,21 @@ export function startFluxerBot() {
           messageCache.set(conversationId, reply);
           return reply;
         }
+      },
+      setStatus: async (text) => {
+        client.sendToGateway(0, {
+          op: GatewayOpcodes.PresenceUpdate as number,
+          d: {
+            status: 'online',
+            since: null,
+            afk: false,
+            custom_status: {
+              text,
+              emoji_name: null,
+              emoji_id: null,
+            },
+          },
+        });
       },
     };
 

@@ -69,11 +69,17 @@ export interface UnifiedMessage {
    * Universal method to edit the last sent reply.
    */
   edit: (content: string) => Promise<any>;
+
+  /**
+   * Sets the bot's custom status text across the platform.
+   * Only available if the caller is the bot owner (checked by the command).
+   */
+  setStatus?: (text: string) => Promise<void>;
 }
 
 export interface BotCommand {
   name: string;
   description: string;
-  category: 'automation' | 'knowledge' | 'social' | 'utility' | 'moderation';
+  category: 'automation' | 'knowledge' | 'social' | 'utility' | 'moderation' | 'system';
   execute: (message: UnifiedMessage, args: string[]) => Promise<void>;
 }
