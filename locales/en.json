@@ -108,6 +108,17 @@
     "echo": {
       "noInput": "❌ Please provide something to echo.\nUsage: `!echo Hello, world!`"
     },
+    "iss": {
+      "embedTitle": "🛰️ ISS Live Position",
+      "fieldLatitude": "📍 Latitude",
+      "fieldLongitude": "📍 Longitude",
+      "fieldCrew": "👨‍🚀 Crew",
+      "crewCount": "{count} on board — {names}",
+      "crewUnavailable": "Crew data unavailable",
+      "mapsLink": "🌍 [View on Google Maps]({url})",
+      "footer": "Last updated • {time}",
+      "error": "An error occurred while fetching ISS data."
+    },
     "ping": {
       "calculating": "Calculating latency...",
       "result": "🏓 Pong! Bot latency is: **{latency}ms**"
@@ -146,6 +157,7 @@
     "currencyAmountDescription": "The amount to convert",
     "currencyFromDescription": "The source currency code (e.g. USD)",
     "currencyToDescription": "The target currency code (e.g. EUR)",
+    "issDescription": "Shows the current position of the ISS and its crew.",
     "pingDescription": "Replies with Pong!",
     "wikiDescription": "Fetches Wikipedia information.",
     "wikiQueryDescription": "The topic to search for",

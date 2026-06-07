@@ -21,6 +21,9 @@ const commands = [
         .setRequired(true)
     ),
   new SlashCommandBuilder()
+    .setName('iss')
+    .setDescription(t('deploy.issDescription')),
+  new SlashCommandBuilder()
     .setName('define')
     .setDescription(t('deploy.defineDescription'))
     .addStringOption(option =>
