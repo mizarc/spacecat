@@ -24,8 +24,9 @@ async function loadCommands(): Promise<Map<string, BotCommand>> {
         continue;
       }
 
-      // Skip test files and non-TS files
-      if (!file.endsWith('.ts') || file.endsWith('.test.ts')) {
+      // Skip test files and non-TS/JS files
+      const ext = extname(file);
+      if ((ext !== '.ts' && ext !== '.js') || file.endsWith('.test.ts') || file.endsWith('.test.js')) {
         continue;
       }
 
@@ -34,7 +35,7 @@ async function loadCommands(): Promise<Map<string, BotCommand>> {
         const module = await import(fileUrl);
         
         // Look for exported command following the pattern: [Name]Command
-        const commandName = file.replace('.ts', '');
+        const commandName = file.replace(/\.(ts|js)$/, '');
         const exportKey = `${commandName.charAt(0).toUpperCase()}${commandName.slice(1)}Command`;
         
         const command = module[exportKey];

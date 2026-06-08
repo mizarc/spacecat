@@ -11,8 +11,11 @@ RUN npm ci
 # Copy application code
 COPY . .
 
+# Compile TypeScript to JavaScript for production
+RUN npm run build
+
 # Ensure the data directory exists for SQLite persistence
 RUN mkdir -p /app/data
 
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["npx", "tsx", "src/index.ts"]
+CMD ["node", "dist/index.js"]
