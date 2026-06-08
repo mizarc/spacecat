@@ -74,7 +74,7 @@ export interface UnifiedMessage {
    * Sets the bot's custom status text across the platform.
    * Only available if the caller is the bot owner (checked by the command).
    */
-  setStatus?: (text: string) => Promise<void>;
+  setStatus?: (opts: { text: string; emojiName?: string | null; emojiId?: string | null }) => Promise<void>;
 
   /**
    * Sets the bot's presence (online/idle/dnd/invisible) across the platform.

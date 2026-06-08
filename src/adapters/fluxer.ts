@@ -146,20 +146,23 @@ export function startFluxerBot() {
           return reply;
         }
       },
-      setStatus: async (text) => {
-        client.sendToGateway(0, {
+      setStatus: async ({ text, emojiName, emojiId }) => {
+        const customStatus: Record<string, string | null> = {
+          text,
+          emoji_name: emojiName ?? null,
+        };
+        // Only include emoji_id for custom server emojis — don't send null for Unicode emojis
+        if (emojiId) customStatus.emoji_id = emojiId;
+        const payload = {
           op: GatewayOpcodes.PresenceUpdate as number,
           d: {
             status: currentPresenceStatus,
             since: null,
             afk: false,
-            custom_status: {
-              text,
-              emoji_name: null,
-              emoji_id: null,
-            },
+            custom_status: customStatus,
           },
-        });
+        };
+        client.sendToGateway(0, payload);
       },
       setPresence: async (status) => {
         currentPresenceStatus = status;

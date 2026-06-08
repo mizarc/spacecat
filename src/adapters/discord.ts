@@ -160,9 +160,12 @@ export function startDiscordBot() {
       edit: async (text) => {
         return await interaction.editReply(text);
       },
-      setStatus: async (text) => {
+      setStatus: async ({ text, emojiName, emojiId }) => {
+        // For custom emojis, reconstruct the full syntax so Discord renders the image
+        const displayEmoji = emojiId && emojiName ? `<:${emojiName}:${emojiId}>` : emojiName;
+        const activityName = displayEmoji ? `${displayEmoji} ${text}` : text;
         await client.user?.setPresence({
-          activities: [{ name: text, type: 4 }],
+          activities: [{ name: activityName, type: 4 }],
           status: currentPresenceStatus,
         });
       },
