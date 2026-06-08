@@ -19,6 +19,9 @@ export const ColorCommand: BotCommand = {
   name: 'color',
   description: 'Shows a color preview with RGB, HSL, and CMYK values.',
   category: 'utility',
+  parameters: [
+    { name: 'hex', description: 'The hex color to display', type: 'string', required: true },
+  ],
   async execute(message, args) {
     const hexCode = args[0];
 

@@ -19,6 +19,9 @@ export const TimestampCommand: BotCommand = {
   name: 'timestamp',
   description: 'Converts a date/time string into timestamp formats.',
   category: 'utility',
+  parameters: [
+    { name: 'time', description: 'The date/time string to convert', type: 'string', required: true },
+  ],
   async execute(message, args) {
     const time = args.join(' ').trim();
 

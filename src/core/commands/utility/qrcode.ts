@@ -8,6 +8,9 @@ export const QrcodeCommand: BotCommand = {
   name: 'qrcode',
   description: 'Generates a QR code from text or a URL.',
   category: 'utility',
+  parameters: [
+    { name: 'data', description: 'The text or URL to encode', type: 'string', required: true },
+  ],
   async execute(message, args) {
     const data = args.join(' ').trim();
 

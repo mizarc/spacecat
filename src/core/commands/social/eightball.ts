@@ -27,6 +27,9 @@ export const EightballCommand: BotCommand = {
   name: '8ball',
   description: 'Ask the Magic 8-Ball a yes/no question.',
   category: 'social',
+  parameters: [
+    { name: 'question', description: 'The question to ask the 8-Ball', type: 'string', required: true },
+  ],
   async execute(message, args) {
     const question = args.join(' ');
 

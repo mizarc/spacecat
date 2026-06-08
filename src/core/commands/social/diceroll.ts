@@ -5,6 +5,9 @@ export const DicerollCommand: BotCommand = {
   name: 'diceroll',
   description: 'Rolls a die with a configurable number of sides.',
   category: 'social',
+  parameters: [
+    { name: 'sides', description: 'Number of sides on the die (default: 6)', type: 'integer', required: false, minValue: 1 },
+  ],
   async execute(message, args) {
     let sides = 6;
 

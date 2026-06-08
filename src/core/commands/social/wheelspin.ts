@@ -5,6 +5,9 @@ export const WheelspinCommand: BotCommand = {
   name: 'wheelspin',
   description: 'Spins a wheel to randomly pick an option.',
   category: 'social',
+  parameters: [
+    { name: 'options', description: 'Comma-separated list of options to pick from', type: 'string', required: true },
+  ],
   async execute(message, args) {
     if (args.length < 2) {
       await message.reply(t('commands.wheelspin.noOptions'));

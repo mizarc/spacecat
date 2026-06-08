@@ -7,6 +7,10 @@ export const PurgeCommand: BotCommand = {
   name: 'purge',
   description: 'Bulk delete messages in the current channel.',
   category: 'moderation',
+  parameters: [
+    { name: 'amount', description: 'Number of messages to delete (1-100)', type: 'integer', required: true, minValue: 1, maxValue: 100 },
+    { name: 'user', description: 'Only delete messages from this user', type: 'user', required: false },
+  ],
   async execute(message, args) {
     const { canManageMessages, fetchMessages, bulkDelete } = message.channel;
 

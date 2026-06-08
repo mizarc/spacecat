@@ -5,6 +5,9 @@ export const DefineCommand: BotCommand = {
   name: 'define',
   description: 'Fetches definitions and examples for a word using the Free Dictionary API.',
   category: 'knowledge',
+  parameters: [
+    { name: 'word', description: 'The word to look up', type: 'string', required: true },
+  ],
   async execute(message, args) {
     if (args.length === 0) {
       await message.reply(t('commands.define.noWord'));

@@ -14,6 +14,11 @@ export const CurrencyCommand: BotCommand = {
     'Converts an amount from one currency to another. '
     + 'Usage: !currency <amount> <from> <to>',
   category: 'knowledge',
+  parameters: [
+    { name: 'amount', description: 'The amount to convert', type: 'number', required: true },
+    { name: 'from', description: 'The source currency code (e.g. USD)', type: 'string', required: true },
+    { name: 'to', description: 'The target currency code (e.g. EUR)', type: 'string', required: true },
+  ],
   async execute(message, args) {
     if (args.length < 3) {
       await message.reply(t('commands.currency.noInput'));

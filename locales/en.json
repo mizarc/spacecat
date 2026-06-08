@@ -202,30 +202,5 @@
       "listItem": "`!{name}` — {description}",
       "noCommands": "No commands available."
     }
-  },
-  "deploy": {
-    "defineDescription": "Fetches definitions and examples for a word.",
-    "defineWordDescription": "The word to look up",
-    "currencyDescription": "Converts an amount from one currency to another.",
-    "currencyAmountDescription": "The amount to convert",
-    "currencyFromDescription": "The source currency code (e.g. USD)",
-    "currencyToDescription": "The target currency code (e.g. EUR)",
-    "issDescription": "Shows the current position of the ISS and its crew.",
-    "8ballDescription": "Ask the Magic 8-Ball a yes/no question.",
-    "8ballQuestionDescription": "The question to ask the 8-Ball",
-    "pingDescription": "Replies with Pong!",
-    "wikiDescription": "Fetches Wikipedia information.",
-    "wikiQueryDescription": "The topic to search for",
-    "colorDescription": "Shows a color preview with RGB, HSL, and CMYK values.",
-    "colorHexDescription": "The hex color to display",
-    "remindmeDescription": "Sets a reminder for a specified time.",
-    "remindmeTimeDescription": "When to remind you (e.g. \"in 5 minutes\", \"tomorrow at 3pm\")",
-    "remindmeMessageDescription": "What to remind you about",
-    "purgeDescription": "Bulk delete messages in the current channel.",
-    "purgeAmountDescription": "Number of messages to delete (1-100)",
-    "purgeUserDescription": "Only delete messages from this user",
-    "helpDescription": "Shows all available commands.",
-    "starting": "Started refreshing application (/) commands.",
-    "success": "Successfully reloaded application (/) commands."
   }
 }

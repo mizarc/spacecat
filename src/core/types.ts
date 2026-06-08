@@ -83,9 +83,24 @@ export interface UnifiedMessage {
   setPresence?: (status: 'online' | 'idle' | 'dnd' | 'invisible') => Promise<void>;
 }
 
+/** Supported command parameter types (maps to Discord API option types). */
+export type CommandParameterType = 'string' | 'integer' | 'number' | 'boolean' | 'user' | 'channel' | 'role' | 'mentionable' | 'attachment';
+
+/** Describes a single command parameter for slash command deployment. */
+export interface CommandParameter {
+  name: string;
+  description: string;
+  type: CommandParameterType;
+  required?: boolean;
+  minValue?: number;
+  maxValue?: number;
+}
+
 export interface BotCommand {
   name: string;
   description: string;
   category: 'automation' | 'knowledge' | 'social' | 'utility' | 'moderation' | 'system';
   execute: (message: UnifiedMessage, args: string[]) => Promise<void>;
+  /** Optional parameter definitions for slash command deployment. */
+  parameters?: CommandParameter[];
 }

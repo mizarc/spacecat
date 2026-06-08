@@ -5,6 +5,9 @@ export const ThesaurusCommand: BotCommand = {
   name: 'thesaurus',
   description: 'Fetches synonyms and antonyms for a word using the Free Dictionary API.',
   category: 'knowledge',
+  parameters: [
+    { name: 'word', description: 'The word to look up', type: 'string', required: true },
+  ],
   async execute(message, args) {
     if (args.length === 0) {
       await message.reply(t('commands.thesaurus.noWord'));

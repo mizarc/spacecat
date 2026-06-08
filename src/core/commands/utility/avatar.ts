@@ -13,6 +13,9 @@ export const AvatarCommand: BotCommand = {
   name: 'avatar',
   description: 'Shows a user\'s profile avatar.',
   category: 'utility',
+  parameters: [
+    { name: 'user', description: 'The user to show (default: yourself)', type: 'user', required: false },
+  ],
   async execute(message, args) {
     let targetUserId = message.author.id;
     let targetUsername = message.author.username;

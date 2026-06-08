@@ -18,6 +18,9 @@ export const SlapCommand: BotCommand = {
   name: 'slap',
   description: 'Slaps a user with their profile picture!',
   category: 'social',
+  parameters: [
+    { name: 'user', description: 'The user to slap', type: 'user', required: false },
+  ],
   async execute(message, args) {
     // Determine target user
     let targetAvatarUrl: string | undefined;

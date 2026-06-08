@@ -2,6 +2,7 @@ import { t } from '../core/i18n.js';
 import { Client, GatewayIntentBits, type Message, Events } from 'discord.js';
 import type { UnifiedMessage, UnifiedAuthor, UnifiedChannel } from '../core/types.js';
 import { handleIncomingMessage } from '../core/router.js';
+import { deployCommands } from '../core/deploy.js';
 import { reminderService } from '../core/services/reminders/reminderService.js';
 
 /** Tracks the bot's presence status so setStatus and setPresence compose cleanly. */
@@ -17,6 +18,9 @@ export function startDiscordBot() {
   });
 
   client.once(Events.ClientReady, () => {
+    // Auto-deploy slash commands on startup (unless unchanged)
+    deployCommands();
+
     reminderService.on('reminderDue', async ({ reminder }) => {
       if (reminder.platform !== 'discord') return;
       try {

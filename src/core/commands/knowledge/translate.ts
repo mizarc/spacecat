@@ -7,6 +7,11 @@ export const TranslateCommand: BotCommand = {
     'Translate text. Format: !translate <target>, or '
     + '!translate <source>:<target> (defaults en→target).',
   category: 'knowledge',
+  parameters: [
+    { name: 'text', description: 'The text to translate', type: 'string', required: true },
+    { name: 'target', description: 'The target language code (e.g. es, fr, ja)', type: 'string', required: true },
+    { name: 'source', description: 'The source language code (default: en)', type: 'string', required: false },
+  ],
   async execute(message, args) {
     if (args.length < 2) {
       await message.reply(t('commands.translate.noInput'));

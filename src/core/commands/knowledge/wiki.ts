@@ -5,6 +5,9 @@ export const WikiCommand: BotCommand = {
   name: 'wiki',
   description: 'Fetches a Wikipedia article summary based on a search term.',
   category: 'knowledge',
+  parameters: [
+    { name: 'query', description: 'The topic to search for', type: 'string', required: true },
+  ],
   async execute(message, args) {
     if (args.length === 0) {
       await message.reply(t('commands.wiki.noSearchTerm'));

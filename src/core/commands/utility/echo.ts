@@ -5,6 +5,9 @@ export const EchoCommand: BotCommand = {
   name: 'echo',
   description: 'Repeats the message you provide.',
   category: 'utility',
+  parameters: [
+    { name: 'text', description: 'The text to repeat', type: 'string', required: true },
+  ],
   async execute(message, args) {
     const text = args.join(' ').trim();
 
