@@ -44,10 +44,10 @@ Before you can run the bot, you need to create bot applications on the platforms
 3. Under **Bot Permissions**, select:
    - `Send Messages`
    - `Read Message History`
-   - `Manage Messages` — needed for the `purge` command
-   - `Embed Links` — for rich command responses
-   - `Attach Files` — for QR codes, slap GIFs, etc.
-   - (Optional) `Use External Emoji` — for emoji in embeds
+   - `Manage Messages`
+   - `Embed Links`
+   - `Attach Files`
+   - `Use External Emoji`
 4. Copy the generated URL, open it in your browser, and select the server to add the bot to.
 
 ### Discord
@@ -68,10 +68,10 @@ Before you can run the bot, you need to create bot applications on the platforms
 3. Under **Bot Permissions**, select:
    - `Send Messages`
    - `Read Message History`
-   - `Manage Messages` — needed for the `purge` command
-   - `Embed Links` — for rich command responses
-   - `Attach Files` — for QR codes, slap GIFs, etc.
-   - (Optional) `Use External Emoji` — for emoji in embeds
+   - `Manage Messages`
+   - `Embed Links`
+   - `Attach Files`
+   - `Use External Emoji`
 4. Copy the generated URL, open it in your browser, and select the server to add the bot to.
 
 ## 🐳 Docker Deployment
