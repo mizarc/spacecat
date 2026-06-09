@@ -66,6 +66,7 @@ Before you can run the bot, you need to create bot applications on the platforms
 1. Go to the **OAuth2 → URL Generator** tab.
 2. Under **Scopes**, select `bot` and `applications.commands`.
 3. Under **Bot Permissions**, select:
+   - `Use Slash Commands`
    - `Send Messages`
    - `Read Message History`
    - `Manage Messages`
