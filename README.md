@@ -6,6 +6,16 @@
 
 A multi-platform chat bot that brings a shared set of fun and useful commands to **Fluxer** and **Discord**. Whether you need to do a quick calculation, a Wikipedia lookup, perform automated tasks, or a GIF of someone getting slapped, Astrokat has you covered!
 
+## 🤖 Official Instance
+
+We have an officially hosted public Astrokat instance ready to use! Invite it to your server with no setup required:
+
+[**Invite Astrokat on Fluxer**](https://web.fluxer.app/oauth2/authorize?client_id=1478053375523042194&scope=bot&permissions=387072)
+
+[**Invite Astrokat on Discord**](https://discord.com/oauth2/authorize?client_id=503580226035384340&scope=bot%20applications.commands&permissions=2147870720)
+
+> 💡 **Prefer to self-host?** You can run Astrokat on your own infrastructure using Docker, all it takes is a token and a couple of commands. Head over to [Getting Started](#-getting-started) to set up your own instance.
+
 ## ✨ Features
 
 - **Multi-platform by design** — Built on a shared command system. Write a command once, it works everywhere. Currently supports Discord and Fluxer.
@@ -50,8 +60,6 @@ Before you can run the bot, you need to create bot applications on the platforms
 4. Under **Token**, click **Reset Token** then **Copy** — this is your `DISCORD_TOKEN`.
 5. Under **Privileged Gateway Intents**, enable:
    - **Message Content Intent** — required for text-based commands (`!ping`, `!help`, etc.)
-   - **Server Members Intent** — required for user lookups
-   - (Optional) **Presence Intent** — required if you use presence-tracking features
 
 #### 2. Invite the bot to your server
 
