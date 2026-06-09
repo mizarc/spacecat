@@ -27,7 +27,7 @@ jobs:
           awk -v ver="[$VERSION]" '
             /^## / {
               if (found) exit
-              if ($0 ~ "^## " ver " ") found=1
+              if (index($0, "## " ver " - ") == 1 || index($0, "## " ver " ") == 1) found=1
               next
             }
             found { print }
@@ -55,8 +55,8 @@ jobs:
       - name: Pin Docker tag in compose file
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          sed "s|image: ghcr.io/mizarc/astrokat:latest|image: ghcr.io/mizarc/astrokat:${VERSION}|" \
-            docker-compose.yml > docker-compose.release.yml
+          sed -i "s|image: ghcr.io/mizarc/astrokat:latest|image: ghcr.io/mizarc/astrokat:${VERSION}|" \
+            docker-compose.yml
 
       - name: Create Draft Release
         run: |
@@ -64,7 +64,7 @@ jobs:
             --title "$GITHUB_REF_NAME" \
             --notes-file release-notes.md \
             --draft \
-            'docker-compose.release.yml#Docker Compose (pinned)' \
-            '.env.example#Environment Example'
+            docker-compose.yml \
+            .env.example
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
