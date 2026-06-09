@@ -2,7 +2,7 @@
 
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Node](https://img.shields.io/badge/node-24.x-blue)
-![Version](https://img.shields.io/badge/release-v0.1.0-orange)
+![Version](https://img.shields.io/github/v/release/mizarc/astrokat)
 
 A multi-platform chat bot that brings a shared set of fun and useful commands to **Fluxer** and **Discord**. Whether you need to do a quick calculation, a Wikipedia lookup, perform automated tasks, or a GIF of someone getting slapped, Astrokat has you covered!
 
