@@ -38,7 +38,7 @@ body:
     id: screenshots
     attributes:
       label: 📸 Screenshots / Logs
-      placeholder: If applicable, add screenshots, console logs, or error output.
+      placeholder: (Optional) If applicable, add screenshots, console logs, or error output.
   - type: input
     id: node_version
     attributes:
