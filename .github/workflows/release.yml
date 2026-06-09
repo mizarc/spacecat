@@ -1,0 +1,70 @@
+# Release — runs when a semver tag (v*) is pushed.
+# Extracts the matching section from CHANGELOG.md and creates a draft GitHub Release
+# with a pinned docker-compose.yml and .env.example.
+
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build release notes
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          # Extract the structured changelog section for this version
+          awk -v ver="[$VERSION]" '
+            /^## / {
+              if (found) exit
+              if ($0 ~ "^## " ver " ") found=1
+              next
+            }
+            found { print }
+          ' CHANGELOG.md > changelog-extract.md
+
+          # Compose the full release page: placeholder intro + changelog
+          cat > release-notes.md <<- EOF
+          <!--
+          Write your release summary here.
+          Talk about highlights, breaking changes, upgrade notes, etc.
+          -->
+
+          Docker images:
+          \`\`\`
+          docker pull ghcr.io/mizarc/astrokat:${VERSION}
+          \`\`\`
+
+          $(cat changelog-extract.md)
+
+          ---
+
+          See the [CHANGELOG](https://github.com/mizarc/astrokat/blob/main/CHANGELOG.md) for the full history.
+          EOF
+
+      - name: Pin Docker tag in compose file
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          sed "s|image: ghcr.io/mizarc/astrokat:latest|image: ghcr.io/mizarc/astrokat:${VERSION}|" \
+            docker-compose.yml > docker-compose.release.yml
+
+      - name: Create Draft Release
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file release-notes.md \
+            --draft \
+            'docker-compose.release.yml#Docker Compose (pinned)' \
+            '.env.example#Environment Example'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

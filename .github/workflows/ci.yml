@@ -14,8 +14,6 @@ on:
     tags: ['v*']
   pull_request:
     branches: [main, production]
-  release:
-    types: [published]
 
 jobs:
   test:
@@ -47,7 +45,6 @@ jobs:
   docker:
     if: >
       (github.ref == 'refs/heads/production' && github.event_name == 'push') ||
-      github.event_name == 'release' ||
       startsWith(github.ref, 'refs/tags/v')
     needs: test
     runs-on: ubuntu-latest
@@ -69,76 +66,11 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/astrokat
           tags: |
-            type=raw,value=latest,enable=${{ github.event_name == 'release' || github.ref == 'refs/heads/production' }}
-            type=semver,pattern=v{{version}},enable=${{ github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v') }}
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/tags/v') }}
+            type=semver,pattern=v{{version}},enable=${{ startsWith(github.ref, 'refs/tags/v') }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           push: true
           tags: ${{ steps.meta.outputs.tags }},ghcr.io/${{ github.repository_owner }}/astrokat:${{ github.sha }}
-
-  # ── Release ──────────────────────────────────────────────────────────────
-  # When a semver tag (v*) is pushed, extract the matching section from
-  # CHANGELOG.md and create a GitHub Release with it.
-  release:
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: [test, docker]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Build release notes
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-
-          # Extract the structured changelog section for this version
-          awk -v ver="$VERSION" '
-            /^## / {
-              if (found) exit
-              if ($0 ~ "^## " ver " ") found=1
-              next
-            }
-            found { print }
-          ' CHANGELOG.md > .changelog.md
-
-          # Compose the full release page: placeholder intro + changelog
-          # Edit the description above the --- line before publishing the draft.
-          cat > .release-notes.md <<- EOF
-          <!--
-          Write your release summary here.
-          Talk about highlights, breaking changes, upgrade notes, etc.
-          -->
-
-          Docker images:
-          \`\`\`
-          docker pull ghcr.io/mizarc/astrokat:$VERSION
-          \`\`\`
-
-          $(cat .changelog.md)
-
-          ---
-
-          See the [CHANGELOG](https://github.com/mizarc/astrokat/blob/main/CHANGELOG.md) for the full history.
-          EOF
-
-      - name: Pin Docker tag in compose file
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          sed "s|image: ghcr.io/mizarc/astrokat:latest|image: ghcr.io/mizarc/astrokat:${VERSION}|" \
-            docker-compose.yml > .release-docker-compose.yml
-
-      - name: Create Draft Release
-        run: |
-          gh release create "$GITHUB_REF_NAME" \
-            --title "$GITHUB_REF_NAME" \
-            --notes-file .release-notes.md \
-            --draft \
-            .release-docker-compose.yml \
-            .env.example
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
