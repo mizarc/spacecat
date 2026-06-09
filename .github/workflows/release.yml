@@ -54,12 +54,38 @@ jobs:
 
       - name: Prepare release assets
         run: |
-          # Upload .env.example with an explicit label to avoid GitHub's "default." prefix on dotfiles
-          cp .env.example release-env.example
-          # Pin the version tag into the compose file
           VERSION="${GITHUB_REF_NAME#v}"
+
+          # Zip destination for release assets
+          mkdir -p release-assets
+
+          # Pin the version tag and strip build: . (release assets target pre-built image users)
           sed -i "s|image: ghcr.io/mizarc/astrokat:latest|image: ghcr.io/mizarc/astrokat:${VERSION}|" \
             docker-compose.yml
+          sed -i '/^\s*build: \./d' docker-compose.yml
+
+          # Bundle into a single zip — preserves .env.example naming, one download
+          cp docker-compose.yml .env.example release-assets/
+
+          cat > release-assets/README.txt <<- README
+          ╔══════════════════════════════════════════════════╗
+          ║  Astrokat ${GITHUB_REF_NAME}                               ║
+          ╚══════════════════════════════════════════════════╝
+
+          1. Copy the environment template:
+             cp .env.example .env
+
+          2. Edit .env with your bot tokens (see docs for how to obtain them).
+
+          3. Start the bot:
+             docker compose up
+
+          Docs:  https://github.com/mizarc/astrokat#readme
+          Issues: https://github.com/mizarc/astrokat/issues
+          README
+
+          cd release-assets
+          zip "astrokat-${GITHUB_REF_NAME}.zip" docker-compose.yml .env.example README.txt
 
       - name: Create Draft Release
         run: |
@@ -67,7 +93,6 @@ jobs:
             --title "$GITHUB_REF_NAME" \
             --notes-file release-notes.md \
             --draft \
-            docker-compose.yml \
-            'release-env.example#.env.example'
+            release-assets/astrokat-*.zip
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
