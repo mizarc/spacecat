@@ -5,6 +5,11 @@
   "type": "module",
   "main": "src/index.ts",
   "repository": "github:mizarc/astrokat",
+  "bugs": "https://github.com/mizarc/astrokat/issues",
+  "homepage": "https://github.com/mizarc/astrokat#readme",
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
     "dev": "node --env-file=.env ./node_modules/tsx/dist/cli.mjs watch src/index.ts",
     "start": "node --env-file=.env ./node_modules/tsx/dist/cli.mjs src/index.ts",
@@ -14,7 +19,15 @@
     "test:coverage": "vitest --coverage",
     "build": "tsc"
   },
-  "keywords": [],
+  "keywords": [
+    "discord",
+    "fluxer",
+    "chatbot",
+    "moderation",
+    "typescript",
+    "discord-js",
+    "multi-platform"
+  ],
   "author": "Mizarc <contact@mizarc.dev>",
   "license": "MIT",
   "dependencies": {
