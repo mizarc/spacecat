@@ -1,6 +1,6 @@
 # Release — runs when a semver tag (v*) is pushed.
 # Extracts the matching section from CHANGELOG.md and creates a draft GitHub Release
-# with a pinned docker-compose.yml and .env.example.
+# with a pinned docker-compose.yml and .env.example, both referencing the released image tag.
 
 name: Release
 
@@ -52,8 +52,11 @@ jobs:
           See the [CHANGELOG](https://github.com/mizarc/astrokat/blob/main/CHANGELOG.md) for the full history.
           EOF
 
-      - name: Pin Docker tag in compose file
+      - name: Prepare release assets
         run: |
+          # Upload .env.example with an explicit label to avoid GitHub's "default." prefix on dotfiles
+          cp .env.example release-env.example
+          # Pin the version tag into the compose file
           VERSION="${GITHUB_REF_NAME#v}"
           sed -i "s|image: ghcr.io/mizarc/astrokat:latest|image: ghcr.io/mizarc/astrokat:${VERSION}|" \
             docker-compose.yml
@@ -65,6 +68,6 @@ jobs:
             --notes-file release-notes.md \
             --draft \
             docker-compose.yml \
-            .env.example
+            'release-env.example#.env.example'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
