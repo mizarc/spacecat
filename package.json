@@ -1,9 +1,10 @@
 {
   "name": "astrokat",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "A modular, multi-platform chatbot with useful features to enhance the chat experience.",
   "type": "module",
   "main": "src/index.ts",
+  "repository": "github:mizarc/astrokat",
   "scripts": {
     "dev": "node --env-file=.env ./node_modules/tsx/dist/cli.mjs watch src/index.ts",
     "start": "node --env-file=.env ./node_modules/tsx/dist/cli.mjs src/index.ts",
