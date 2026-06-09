@@ -77,6 +77,20 @@ export function startDiscordBot() {
         if (!me) return false;
         return ch.permissionsFor(me)?.has('ManageMessages') ?? false;
       },
+      userCanManageMessages: async () => {
+        let ch: any = interaction.channel ?? null;
+        if (!ch && interaction.guild) {
+          try {
+            ch = await interaction.guild.channels.fetch(interaction.channelId);
+          } catch {
+            return false;
+          }
+        }
+        if (!ch || typeof ch.bulkDelete !== 'function') return false;
+        const member = (interaction as any).member;
+        if (!member) return false;
+        return ch.permissionsFor(member)?.has('ManageMessages') ?? false;
+      },
       fetchMessages: async (limit: number) => {
         let ch: any = interaction.channel ?? null;
         if (!ch && interaction.guild) {

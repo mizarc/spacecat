@@ -7,21 +7,29 @@ export const PurgeCommand: BotCommand = {
   name: 'purge',
   description: 'Bulk delete messages in the current channel.',
   category: 'moderation',
+  requiredPermissions: ['ManageMessages'],
   parameters: [
     { name: 'amount', description: 'Number of messages to delete (1-100)', type: 'integer', required: true, minValue: 1, maxValue: 100 },
     { name: 'user', description: 'Only delete messages from this user', type: 'user', required: false },
   ],
   async execute(message, args) {
-    const { canManageMessages, fetchMessages, bulkDelete } = message.channel;
+    const { canManageMessages, userCanManageMessages, fetchMessages, bulkDelete } = message.channel;
 
-    if (!canManageMessages || !fetchMessages || !bulkDelete) {
+    if (!canManageMessages || !userCanManageMessages || !fetchMessages || !bulkDelete) {
       await message.reply(t('commands.purge.notAvailable'));
       return;
     }
 
-    // Check permission
-    const hasPerms = await canManageMessages();
-    if (!hasPerms) {
+    // Check user has permission (runtime safeguard beyond Discord-side gating)
+    const userHasPerms = await userCanManageMessages();
+    if (!userHasPerms) {
+      await message.reply(t('commands.purge.userMissingPerms'));
+      return;
+    }
+
+    // Check bot has permission
+    const botHasPerms = await canManageMessages();
+    if (!botHasPerms) {
       await message.reply(t('commands.purge.botMissingPerms'));
       return;
     }

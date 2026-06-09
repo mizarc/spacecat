@@ -7,6 +7,7 @@ vi.mock('../../i18n.js', () => ({
     const map: Record<string, string> = {
       'commands.purge.notAvailable': '❌ Cannot purge messages in this channel.',
       'commands.purge.botMissingPerms': '❌ I need the **Manage Messages** permission to purge.',
+      'commands.purge.userMissingPerms': '❌ You need the **Manage Messages** permission to purge messages.',
       'commands.purge.invalidAmount': '❌ Please provide a valid number of messages to purge (1-100).',
       'commands.purge.tooMany': '❌ You can only purge up to **100** messages at a time.',
       'commands.purge.noMessages': '❌ No messages found to purge.',
@@ -31,6 +32,7 @@ const { PurgeCommand } = await import('./purge.js');
 
 describe('PurgeCommand', () => {
   let mockCanManageMessages: ReturnType<typeof vi.fn>;
+  let mockUserCanManageMessages: ReturnType<typeof vi.fn>;
   let mockBulkDelete: ReturnType<typeof vi.fn>;
   let mockReply: ReturnType<typeof vi.fn>;
 
@@ -62,9 +64,11 @@ describe('PurgeCommand', () => {
     const fetchMessages: (limit: number) => Promise<ChannelMessage[]> = vi.fn();
     const bulkDelete: (messageIds: string[]) => Promise<void> = mockBulkDelete as any;
     const canManageMessages: () => Promise<boolean> = mockCanManageMessages as any;
+    const userCanManageMessages: () => Promise<boolean> = mockUserCanManageMessages as any;
     return {
       id: 'channel-123',
       canManageMessages,
+      userCanManageMessages,
       fetchMessages,
       bulkDelete,
       ...overrides,
@@ -74,6 +78,7 @@ describe('PurgeCommand', () => {
   beforeEach(() => {
     mockReply = vi.fn();
     mockCanManageMessages = vi.fn().mockResolvedValue(true);
+    mockUserCanManageMessages = vi.fn().mockResolvedValue(true);
     mockBulkDelete = vi.fn().mockResolvedValue(undefined);
   });
 
@@ -90,6 +95,14 @@ describe('PurgeCommand', () => {
     const msg = createMessage();
     await PurgeCommand.execute(msg, ['5']);
     expect(mockReply).toHaveBeenCalledWith(expect.stringContaining('Manage Messages'));
+  });
+
+  it('should reject when user lacks ManageMessages', async () => {
+    mockUserCanManageMessages.mockResolvedValue(false);
+    const msg = createMessage();
+    await PurgeCommand.execute(msg, ['5']);
+    expect(mockReply).toHaveBeenCalledWith(expect.stringContaining('You need'));
+    expect(mockBulkDelete).not.toHaveBeenCalled();
   });
 
   it('should reject a non-positive amount', async () => {

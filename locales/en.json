@@ -176,6 +176,7 @@
       "discordOnly": "❌ The purge command is only available as a Discord slash command.",
       "notAvailable": "❌ Cannot purge messages in this channel.",
       "botMissingPerms": "❌ I need the **Manage Messages** permission to purge.",
+      "userMissingPerms": "❌ You need the **Manage Messages** permission to purge messages.",
       "invalidAmount": "❌ Please provide a valid number of messages to purge (1-100).",
       "tooMany": "❌ You can only purge up to **100** messages at a time.",
       "noMessages": "❌ No messages found to purge.",

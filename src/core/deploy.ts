@@ -1,4 +1,4 @@
-import { REST, Routes, SlashCommandBuilder } from 'discord.js';
+import { REST, Routes, SlashCommandBuilder, PermissionFlagsBits } from 'discord.js';
 import { readdirSync, statSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -9,6 +9,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const commandsDir = join(__dirname, 'commands');
 const HASH_FILE = resolve(__dirname, '..', '..', 'data', '.command-hash.json');
+
+/**
+ * Map permission string names to Discord PermissionFlagsBits BigInt values.
+ */
+const PERMISSION_MAP: Record<string, bigint> = {
+  ManageMessages: PermissionFlagsBits.ManageMessages,
+  ManageChannels: PermissionFlagsBits.ManageChannels,
+  KickMembers: PermissionFlagsBits.KickMembers,
+  BanMembers: PermissionFlagsBits.BanMembers,
+  ModerateMembers: PermissionFlagsBits.ModerateMembers,
+  Administrator: PermissionFlagsBits.Administrator,
+};
 
 /**
  * Map our CommandParameterType to the correct SlashCommandBuilder method.
@@ -75,6 +87,21 @@ async function buildSlashCommands(): Promise<SlashCommandBuilder[]> {
           if (command.parameters) {
             for (const opt of command.parameters) {
               addOption(builder, opt);
+            }
+          }
+
+          // Apply Discord-side permission gating
+          if (command.requiredPermissions && command.requiredPermissions.length > 0) {
+            let perms = 0n;
+            for (const perm of command.requiredPermissions) {
+              const flag = PERMISSION_MAP[perm];
+              if (flag !== undefined) {
+                perms |= flag;
+              }
+            }
+            if (perms !== 0n) {
+              builder.setDefaultMemberPermissions(perms);
+              builder.setDMPermission(false);
             }
           }
 

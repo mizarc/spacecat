@@ -41,6 +41,7 @@ export interface UnifiedChannel {
   fetchMessages?: (limit: number) => Promise<ChannelMessage[]>;
   bulkDelete?: (messageIds: string[]) => Promise<void>;
   canManageMessages?: () => Promise<boolean>;
+  userCanManageMessages?: () => Promise<boolean>;
 }
 
 export interface UnifiedMessage {
@@ -103,4 +104,11 @@ export interface BotCommand {
   execute: (message: UnifiedMessage, args: string[]) => Promise<void>;
   /** Optional parameter definitions for slash command deployment. */
   parameters?: CommandParameter[];
+  /**
+   * Discord permission strings required to use this command.
+   * When set, the slash command is hidden from users without the permission
+   * (Discord-side gating), and the command itself should also verify at runtime.
+   * Example: ['ManageMessages']
+   */
+  requiredPermissions?: string[];
 }

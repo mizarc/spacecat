@@ -63,6 +63,18 @@ export function startFluxerBot() {
           return false;
         }
       },
+      userCanManageMessages: async () => {
+        try {
+          const ch = await client.channels.resolve(message.channelId);
+          if (!ch || !('bulkDeleteMessages' in ch)) return false;
+          const guild = await message.resolveGuild();
+          if (!guild) return false;
+          const authorMember = await guild.members.resolve(message.author.id);
+          return authorMember.permissions.has(PermissionFlags.ManageMessages);
+        } catch {
+          return false;
+        }
+      },
       fetchMessages: async (limit: number) => {
         try {
           const raw: any[] = await client.rest.get(
