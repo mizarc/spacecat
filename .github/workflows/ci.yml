@@ -74,5 +74,4 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-            ghcr.io/${{ github.repository_owner }}/astrokat:${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }},ghcr.io/${{ github.repository_owner }}/astrokat:${{ github.sha }}
