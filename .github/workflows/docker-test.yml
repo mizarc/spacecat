@@ -1,0 +1,25 @@
+# Docker test — builds the Docker image on PRs to catch Dockerfile breakage early.
+# No push — just a build smoke test.
+
+name: Docker test
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches: [main, production]
+
+jobs:
+  docker-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          tags: astrokat:test
