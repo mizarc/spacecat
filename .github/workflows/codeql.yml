@@ -1,0 +1,39 @@
+# CodeQL — security analysis on every push and PR to main/production, plus weekly.
+
+name: CodeQL
+
+permissions:
+  security-events: write
+  contents: read
+
+on:
+  push:
+    branches: [main, production]
+  pull_request:
+    branches: [main, production]
+  schedule:
+    - cron: '0 10 * * 6'  # every Monday at 09:00 UTC
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform analysis
+        uses: github/codeql-action/analyze@v3
