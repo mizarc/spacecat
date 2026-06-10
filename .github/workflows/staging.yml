@@ -1,7 +1,6 @@
-# Docker — builds and pushes images to GHCR on merges and tags.
-# Not triggered on PRs — only on actual commits to main/production.
+# Staging — builds and pushes the staging Docker image on every merge to main.
 
-name: Docker
+name: Staging
 
 permissions:
   contents: read
@@ -9,15 +8,14 @@ permissions:
 
 on:
   push:
-    branches: [main, production]
-    tags: ['v*']
+    branches: [main]
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/astrokat
 
 jobs:
-  docker:
+  staging:
     runs-on: ubuntu-latest
 
     steps:
@@ -37,12 +35,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            # staging tag for every main merge
-            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/main' }}
-            # latest and semver for production/tags
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/tags/v') }}
-            type=semver,pattern=v{{version}},enable=${{ startsWith(github.ref, 'refs/tags/v') }}
-            # always tag with the commit SHA for traceability
+            type=raw,value=staging
             type=sha
 
       - name: Build and push Docker image
