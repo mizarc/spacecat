@@ -1,6 +1,6 @@
 # Astrokat — A Chat Companion for All
 
-![License](https://img.shields.io/badge/license-MIT-green)
+![License](https://img.shields.io/badge/license-AGPLv3-red)
 ![Node](https://img.shields.io/badge/node-24.x-blue)
 ![Version](https://img.shields.io/github/v/release/mizarc/astrokat)
 
