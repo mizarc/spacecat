@@ -224,7 +224,52 @@
       "footer": "Top 10"
     },
     "xp": {
-      "levelUp": "🎉 **Level Up!** You're now **level {level}**! (+{earnedXp} XP)"
+      "levelUp": "🎉 **Level Up!** You're now **level {level}**! (+{earnedXp} XP)",
+      "guildOnly": "❌ This command can only be used in a server.",
+      "helpTitle": "🛠️ XP System Management",
+      "helpDescription": "**Subcommands:**\n`xp set <user> <amount>` — Set a user's XP (admin)\n`xp add <user> <amount>` — Add XP to a user (admin)\n`xp notify [on/off]` — Toggle level-up notifications\n`xp guild [on/off]` — Toggle server announcements (admin)\n`xp bonus add <word> <xp>` — Add keyword bonus (admin)\n`xp bonus remove <word>` — Remove keyword bonus (admin)\n`xp bonus list` — List all keyword bonuses",
+      "unknownSubcommand": "❌ Unknown subcommand `{sub}`. Use `!xp` to see available commands.",
+      "invalidToggle": "❌ Please specify `on` or `off`.",
+      "noPermission": "❌ You don't have permission to use this subcommand.",
+      "enabled": "ON",
+      "disabled": "OFF",
+      "notifyCurrent": "🔔 Your level-up notifications are currently **{status}**.",
+      "notifyNoChange": "🔔 Level-up notifications are already **{status}**.",
+      "notifyUpdated": "🔔 Level-up notifications turned **{status}**.",
+      "guildCurrent": "🔔 Server level-up announcements are **{status}**.",
+      "guildNoChange": "🔔 Server level-up announcements are already **{status}**.",
+      "guildUpdated": "🔔 Server level-up announcements turned **{status}**.",
+      "setUsage": "❌ Usage: `xp set <@user> <amount>`",
+      "addUsage": "❌ Usage: `xp add <@user> <amount>`",
+      "invalidAmount": "❌ Invalid XP amount. Please provide a positive number.",
+      "setResult": "✅ Set <@{userId}> to **{xp} XP** (Level {level}) {levelNote}",
+      "addResult": "✅ Added **{amount} XP** to <@{userId}> — now at **{xp} XP** (Level {level}) {levelNote}",
+      "levelChanged": "⭐ They levelled up to **Level {level}**!",
+      "bonusNoBonuses": "📝 No keyword bonuses configured for this server.",
+      "bonusList": "📝 **Keyword Bonuses:**\n{list}",
+      "bonusEntry": "• `{keyword}` → **{xpAmount} XP**",
+      "bonusAddUsage": "❌ Usage: `xp bonus add <keyword> <xp_amount>`",
+      "bonusAdded": "✅ Bonus keyword `{keyword}` set for **{xpAmount} XP**.",
+      "bonusRemoveUsage": "❌ Usage: `xp bonus remove <keyword>`",
+      "bonusRemoved": "✅ Bonus keyword `{keyword}` removed."
+    },
+    "levelupnotify": {
+      "guildOnly": "❌ This command can only be used in a server.",
+      "currentStatus": "🔔 Your level-up notifications are currently **{status}**.",
+      "invalidToggle": "❌ Please specify `on` or `off`.",
+      "noChange": "🔔 Level-up notifications are already **{status}**.",
+      "updated": "🔔 Level-up notifications turned **{status}**.",
+      "enabled": "ON",
+      "disabled": "OFF"
+    },
+    "guildlevelup": {
+      "guildOnly": "❌ This command can only be used in a server.",
+      "currentStatus": "🔔 Server level-up announcements are **{status}**.",
+      "invalidToggle": "❌ Please specify `on` or `off`.",
+      "noChange": "🔔 Server level-up announcements are already **{status}**.",
+      "updated": "🔔 Server level-up announcements turned **{status}**.",
+      "enabled": "ON",
+      "disabled": "OFF"
     },
     "help": {
       "title": "📋 Help",

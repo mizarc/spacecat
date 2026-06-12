@@ -7,6 +7,22 @@ export interface XPEntry {
   /** Unix timestamp of the last XP-granting action (cooldown enforcement). */
   lastActionAt: number;
   updatedAt: number;
+  /** Whether this user wants level-up notifications. Defaults to true when not set. */
+  xpNotifications?: boolean;
+}
+
+/** Guild-level XP configuration. */
+export interface GuildConfig {
+  guildId: string;
+  /** Whether level-up messages are sent in the guild. Defaults to true when not set. */
+  levelUpMessages: boolean;
+}
+
+/** A keyword-triggered XP bonus configured by a guild admin. */
+export interface KeywordBonus {
+  guildId: string;
+  keyword: string;
+  xpAmount: number;
 }
 
 /**
@@ -27,4 +43,27 @@ export interface XPStore {
 
   /** Get total number of users with XP entries in a guild. */
   getMemberCount(guildId: string): Promise<number>;
+
+  /** Get guild-level XP configuration. Returns defaults if not set. */
+  getGuildConfig(guildId: string): Promise<GuildConfig>;
+
+  /** Update guild-level XP configuration. */
+  setGuildConfig(guildId: string, config: Partial<GuildConfig>): Promise<void>;
+
+  /** Toggle a user's level-up notification preference. */
+  setXpNotifications(guildId: string, userId: string, enabled: boolean): Promise<void>;
+
+  // ── Keyword bonuses ──────────────────────────────────────────────────────
+
+  /** Get the bonus XP for a keyword in a guild, or null if not configured. */
+  getKeywordBonus(guildId: string, keyword: string): Promise<number | null>;
+
+  /** Set a keyword bonus. Overwrites if the same keyword already exists. */
+  setKeywordBonus(guildId: string, keyword: string, xpAmount: number): Promise<void>;
+
+  /** Remove a keyword bonus. No-op if it doesn't exist. */
+  removeKeywordBonus(guildId: string, keyword: string): Promise<void>;
+
+  /** List all keyword bonuses configured for a guild. */
+  listKeywordBonuses(guildId: string): Promise<KeywordBonus[]>;
 }

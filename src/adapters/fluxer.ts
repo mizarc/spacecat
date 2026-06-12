@@ -1,7 +1,7 @@
 import { t } from '../core/i18n.js';
 import { Client, EmbedBuilder, Events, PermissionFlags, GatewayOpcodes } from '@fluxerjs/core';
 import type { UnifiedMessage, UnifiedAuthor, UnifiedChannel, ReplyEmbed } from '../core/types.js';
-import { handleIncomingMessage } from '../core/router.js';
+import { handleIncomingMessage, awardMessageXp } from '../core/router.js';
 import { reminderService } from '../core/services/reminders/reminderService.js';
 
 /** Tracks the bot's presence status so setStatus and setPresence compose cleanly. */
@@ -192,6 +192,9 @@ export function startFluxerBot() {
 
     // 3. Send to Router
     await handleIncomingMessage(unified, false);
+
+    // Award XP for every message in a guild
+    await awardMessageXp(unified);
   });
 
   // Register reminder listener

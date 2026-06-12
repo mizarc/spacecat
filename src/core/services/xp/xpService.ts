@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import type { XPStore, XPEntry } from './xpStore.js';
+import type { XPStore, XPEntry, GuildConfig, KeywordBonus } from './xpStore.js';
 
 /** Cooldown period in milliseconds between XP-granting actions. */
 const XP_COOLDOWN_MS = 60_000;
@@ -58,24 +58,50 @@ class XPService extends EventEmitter<XPServiceEvents> {
    * - Respects the cooldown: if the user acted less than `XP_COOLDOWN_MS`
    *   ago, this is a no-op.
    * - Randomises the XP gain slightly (10–19 XP).
+   * - Scans `messageContent` for keyword-triggered XP bonuses and adds them on top.
    * - Emits `levelUp` when crossing a level threshold.
    *
-   * Returns an object describing the result, or `null` if on cooldown.
+   * Returns an object describing the result.
    */
   async awardXp(
     guildId: string,
     userId: string,
     platform: 'discord' | 'fluxer',
-  ): Promise<{ awarded: boolean; levelUp: { oldLevel: number; newLevel: number; earnedXp: number } | null }> {
+    messageContent?: string,
+  ): Promise<{
+    awarded: boolean;
+    levelUp: { oldLevel: number; newLevel: number; earnedXp: number } | null;
+    /** Whether this user has level-up notifications enabled (defaults to true). */
+    xpNotifications: boolean;
+    /** Bonus XP awarded from keyword triggers. */
+    keywordBonus: number;
+  }> {
     const now = Date.now();
     const existing = await this.persistence.getEntry(guildId, userId);
 
     // Cooldown check
     if (existing && (now - existing.lastActionAt) < XP_COOLDOWN_MS) {
-      return { awarded: false, levelUp: null };
+      return { awarded: false, levelUp: null, xpNotifications: existing?.xpNotifications ?? true, keywordBonus: 0 };
     }
 
-    const earnedXp = XP_BASE + Math.floor(Math.random() * XP_VARIANCE);
+    let earnedXp = XP_BASE + Math.floor(Math.random() * XP_VARIANCE);
+    let keywordBonus = 0;
+
+    // Scan message content for keyword-triggered XP bonuses
+    if (messageContent) {
+      const words = new Set<string>();
+      for (const word of messageContent.toLowerCase().split(/[\s,]+/)) {
+        if (word.length > 0) words.add(word);
+      }
+      for (const word of words) {
+        const bonusAmount = await this.persistence.getKeywordBonus(guildId, word);
+        if (bonusAmount !== null && bonusAmount > 0) {
+          earnedXp += bonusAmount;
+          keywordBonus += bonusAmount;
+        }
+      }
+    }
+
     const previousXp = existing?.xp ?? 0;
     const newXp = previousXp + earnedXp;
     const oldLevel = existing?.level ?? 0;
@@ -89,6 +115,7 @@ class XPService extends EventEmitter<XPServiceEvents> {
       level: newLevel,
       lastActionAt: now,
       updatedAt: now,
+      xpNotifications: existing?.xpNotifications ?? true,
     };
 
     await this.persistence.upsertEntry(entry);
@@ -104,10 +131,10 @@ class XPService extends EventEmitter<XPServiceEvents> {
         newLevel,
         xp: newXp,
       });
-      return { awarded: true, levelUp: levelUpInfo };
+      return { awarded: true, levelUp: levelUpInfo, xpNotifications: entry.xpNotifications ?? true, keywordBonus };
     }
 
-    return { awarded: true, levelUp: null };
+    return { awarded: true, levelUp: null, xpNotifications: entry.xpNotifications ?? true, keywordBonus };
   }
 
   /** Get a user's XP entry. */
@@ -132,6 +159,118 @@ class XPService extends EventEmitter<XPServiceEvents> {
   /** Get the number of XP-tracked members in a guild. */
   async getMemberCount(guildId: string): Promise<number> {
     return this.persistence.getMemberCount(guildId);
+  }
+
+  /** Get guild-level XP configuration. */
+  async getGuildConfig(guildId: string): Promise<GuildConfig> {
+    return this.persistence.getGuildConfig(guildId);
+  }
+
+  /** Update guild-level XP configuration. */
+  async setGuildConfig(guildId: string, config: Partial<GuildConfig>): Promise<void> {
+    return this.persistence.setGuildConfig(guildId, config);
+  }
+
+  /** Toggle a user's level-up notification preference. */
+  async setXpNotifications(guildId: string, userId: string, enabled: boolean): Promise<void> {
+    return this.persistence.setXpNotifications(guildId, userId, enabled);
+  }
+
+  // ── Admin XP manipulation (no cooldown) ─────────────────────────────────
+
+  /**
+   * Directly set a user's XP to an exact value (admin override).
+   * Recalculates level and emits levelUp if the level changed.
+   * Does NOT respect the normal XP cooldown.
+   */
+  async setXpDirect(
+    guildId: string,
+    userId: string,
+    platform: 'discord' | 'fluxer',
+    xp: number,
+  ): Promise<{ xp: number; level: number; oldLevel: number }> {
+    const existing = await this.persistence.getEntry(guildId, userId);
+    const oldLevel = existing?.level ?? 0;
+    const newLevel = levelFromXp(xp);
+    const now = Date.now();
+
+    const entry: XPEntry = {
+      guildId,
+      userId,
+      platform: existing?.platform ?? platform,
+      xp,
+      level: newLevel,
+      lastActionAt: existing?.lastActionAt ?? now,
+      updatedAt: now,
+      xpNotifications: existing?.xpNotifications ?? true,
+    };
+
+    await this.persistence.upsertEntry(entry);
+
+    if (newLevel > oldLevel) {
+      this.emit('levelUp', { guildId, userId, platform, oldLevel, newLevel, xp });
+    }
+
+    return { xp, level: newLevel, oldLevel };
+  }
+
+  /**
+   * Add XP to a user bypassing the normal cooldown (admin reward / keyword bonus).
+   * Recalculates level and emits levelUp if the level changed.
+   */
+  async addXpDirect(
+    guildId: string,
+    userId: string,
+    platform: 'discord' | 'fluxer',
+    amount: number,
+  ): Promise<{ xp: number; level: number; oldLevel: number }> {
+    const existing = await this.persistence.getEntry(guildId, userId);
+    const previousXp = existing?.xp ?? 0;
+    const newXp = previousXp + amount;
+    const oldLevel = existing?.level ?? 0;
+    const newLevel = levelFromXp(newXp);
+    const now = Date.now();
+
+    const entry: XPEntry = {
+      guildId,
+      userId,
+      platform: existing?.platform ?? platform,
+      xp: newXp,
+      level: newLevel,
+      lastActionAt: existing?.lastActionAt ?? now,
+      updatedAt: now,
+      xpNotifications: existing?.xpNotifications ?? true,
+    };
+
+    await this.persistence.upsertEntry(entry);
+
+    if (newLevel > oldLevel) {
+      this.emit('levelUp', { guildId, userId, platform, oldLevel, newLevel, xp: newXp });
+    }
+
+    return { xp: newXp, level: newLevel, oldLevel };
+  }
+
+  // ── Keyword bonuses ─────────────────────────────────────────────────────
+
+  /** Get the bonus XP for a keyword in a guild. */
+  async getKeywordBonus(guildId: string, keyword: string): Promise<number | null> {
+    return this.persistence.getKeywordBonus(guildId, keyword);
+  }
+
+  /** Set a keyword bonus. */
+  async setKeywordBonus(guildId: string, keyword: string, xpAmount: number): Promise<void> {
+    return this.persistence.setKeywordBonus(guildId, keyword, xpAmount);
+  }
+
+  /** Remove a keyword bonus. */
+  async removeKeywordBonus(guildId: string, keyword: string): Promise<void> {
+    return this.persistence.removeKeywordBonus(guildId, keyword);
+  }
+
+  /** List all keyword bonuses for a guild. */
+  async listKeywordBonuses(guildId: string): Promise<KeywordBonus[]> {
+    return this.persistence.listKeywordBonuses(guildId);
   }
 }
 

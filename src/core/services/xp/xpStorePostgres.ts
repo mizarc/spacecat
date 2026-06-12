@@ -1,5 +1,5 @@
 import pg from 'pg';
-import type { XPStore, XPEntry } from './xpStore.js';
+import type { XPStore, XPEntry, GuildConfig, KeywordBonus } from './xpStore.js';
 
 const { Pool } = pg;
 
@@ -37,8 +37,8 @@ export class PostgresXPStore implements XPStore {
 
   async upsertEntry(entry: XPEntry): Promise<void> {
     await this.pool.query(
-      `INSERT INTO xp (guild_id, user_id, platform, xp, level, last_action_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO xp (guild_id, user_id, platform, xp, level, last_action_at, updated_at, xp_notifications)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        ON CONFLICT (guild_id, user_id) DO UPDATE SET
          xp             = EXCLUDED.xp,
          level          = EXCLUDED.level,
@@ -53,6 +53,7 @@ export class PostgresXPStore implements XPStore {
         entry.level,
         entry.lastActionAt,
         entry.updatedAt,
+        entry.xpNotifications ?? true,
       ],
     );
   }
@@ -89,6 +90,83 @@ export class PostgresXPStore implements XPStore {
     return parseInt(result.rows[0].count, 10);
   }
 
+  async getGuildConfig(guildId: string): Promise<GuildConfig> {
+    const result = await this.pool.query(
+      'SELECT * FROM guild_config WHERE guild_id = $1',
+      [guildId],
+    );
+
+    return {
+      guildId,
+      levelUpMessages: result.rows.length > 0 ? result.rows[0].level_up_messages : true,
+    };
+  }
+
+  async setGuildConfig(guildId: string, config: Partial<GuildConfig>): Promise<void> {
+    const existing = await this.pool.query(
+      'SELECT * FROM guild_config WHERE guild_id = $1',
+      [guildId],
+    );
+
+    const levelUpMessages = config.levelUpMessages ?? (existing.rows.length > 0 ? existing.rows[0].level_up_messages : true);
+
+    await this.pool.query(
+      `INSERT INTO guild_config (guild_id, level_up_messages)
+       VALUES ($1, $2)
+       ON CONFLICT (guild_id) DO UPDATE SET
+         level_up_messages = EXCLUDED.level_up_messages`,
+      [guildId, levelUpMessages],
+    );
+  }
+
+  async setXpNotifications(guildId: string, userId: string, enabled: boolean): Promise<void> {
+    await this.pool.query(
+      'UPDATE xp SET xp_notifications = $1 WHERE guild_id = $2 AND user_id = $3',
+      [enabled, guildId, userId],
+    );
+  }
+
+  // ── Keyword bonuses ────────────────────────────────────────────────────
+
+  async getKeywordBonus(guildId: string, keyword: string): Promise<number | null> {
+    const result = await this.pool.query(
+      'SELECT xp_amount FROM keyword_bonuses WHERE guild_id = $1 AND keyword = $2',
+      [guildId, keyword.toLowerCase()],
+    );
+
+    return result.rows[0]?.xp_amount ?? null;
+  }
+
+  async setKeywordBonus(guildId: string, keyword: string, xpAmount: number): Promise<void> {
+    await this.pool.query(
+      `INSERT INTO keyword_bonuses (guild_id, keyword, xp_amount)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (guild_id, keyword) DO UPDATE SET
+         xp_amount = EXCLUDED.xp_amount`,
+      [guildId, keyword.toLowerCase(), xpAmount],
+    );
+  }
+
+  async removeKeywordBonus(guildId: string, keyword: string): Promise<void> {
+    await this.pool.query(
+      'DELETE FROM keyword_bonuses WHERE guild_id = $1 AND keyword = $2',
+      [guildId, keyword.toLowerCase()],
+    );
+  }
+
+  async listKeywordBonuses(guildId: string): Promise<KeywordBonus[]> {
+    const result = await this.pool.query(
+      'SELECT * FROM keyword_bonuses WHERE guild_id = $1 ORDER BY keyword',
+      [guildId],
+    );
+
+    return result.rows.map((row) => ({
+      guildId: row.guild_id as string,
+      keyword: row.keyword as string,
+      xpAmount: row.xp_amount as number,
+    }));
+  }
+
   private rowToEntry(row: Record<string, unknown>): XPEntry {
     return {
       guildId: row.guild_id as string,
@@ -98,19 +176,21 @@ export class PostgresXPStore implements XPStore {
       level: row.level as number,
       lastActionAt: row.last_action_at as number,
       updatedAt: row.updated_at as number,
+      xpNotifications: row.xp_notifications === undefined ? true : Boolean(row.xp_notifications),
     };
   }
 
   private async ensureTable(): Promise<void> {
     await this.pool.query(`
       CREATE TABLE IF NOT EXISTS xp (
-        guild_id       TEXT NOT NULL,
-        user_id        TEXT NOT NULL,
-        platform       TEXT NOT NULL DEFAULT 'discord',
-        xp             INTEGER NOT NULL DEFAULT 0,
-        level          INTEGER NOT NULL DEFAULT 0,
-        last_action_at INTEGER NOT NULL DEFAULT 0,
-        updated_at     INTEGER NOT NULL,
+        guild_id        TEXT NOT NULL,
+        user_id         TEXT NOT NULL,
+        platform        TEXT NOT NULL DEFAULT 'discord',
+        xp              INTEGER NOT NULL DEFAULT 0,
+        level           INTEGER NOT NULL DEFAULT 0,
+        last_action_at  INTEGER NOT NULL DEFAULT 0,
+        updated_at      INTEGER NOT NULL,
+        xp_notifications BOOLEAN NOT NULL DEFAULT true,
         PRIMARY KEY (guild_id, user_id)
       )
     `);
@@ -118,6 +198,22 @@ export class PostgresXPStore implements XPStore {
     await this.pool.query(`
       CREATE INDEX IF NOT EXISTS idx_xp_guild_xp
       ON xp (guild_id, xp DESC)
+    `);
+
+    await this.pool.query(`
+      CREATE TABLE IF NOT EXISTS guild_config (
+        guild_id          TEXT PRIMARY KEY,
+        level_up_messages BOOLEAN NOT NULL DEFAULT true
+      )
+    `);
+
+    await this.pool.query(`
+      CREATE TABLE IF NOT EXISTS keyword_bonuses (
+        guild_id  TEXT NOT NULL,
+        keyword   TEXT NOT NULL,
+        xp_amount INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (guild_id, keyword)
+      )
     `);
   }
 }

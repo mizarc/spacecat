@@ -100,19 +100,31 @@ export async function handleIncomingMessage(
   if (command) {
     console.log(t('system.executingCommand', { commandName, type: isSlashCommand ? 'Slash' : 'Text' }));
     await command.execute(message, args);
-
-    // Award XP for non-trivial command usage (exclude XP commands themselves)
-    if (message.guildId && commandName !== 'rank' && commandName !== 'leaderboard') {
-      const result = await xpService.awardXp(message.guildId, message.author.id, message.platform);
-      if (result.levelUp) {
-        await message.reply(t('commands.xp.levelUp', {
-          level: result.levelUp.newLevel,
-          earnedXp: result.levelUp.earnedXp,
-        }));
-      }
-    }
   } else {
     // Only reply if it was a text command (don't clutter Discord slash UI)
     if (!isSlashCommand) await message.reply(t('system.commandNotFound'));
+  }
+}
+
+/**
+ * Award XP for sending messages.
+ * Call this from adapters for every incoming message in a guild.
+ * The 60-second cooldown is handled internally by xpService.
+ */
+export async function awardMessageXp(message: UnifiedMessage): Promise<void> {
+  if (!message.guildId) return;
+
+  const result = await xpService.awardXp(
+    message.guildId, message.author.id, message.platform, message.content,
+  );
+
+  if (result.levelUp && result.xpNotifications) {
+    const guildConfig = await xpService.getGuildConfig(message.guildId);
+    if (guildConfig.levelUpMessages) {
+      await message.reply(t('commands.xp.levelUp', {
+        level: result.levelUp.newLevel,
+        earnedXp: result.levelUp.earnedXp,
+      }));
+    }
   }
 }
