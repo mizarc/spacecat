@@ -53,7 +53,7 @@ export class PostgresXPStore implements XPStore {
         entry.level,
         entry.lastActionAt,
         entry.updatedAt,
-        entry.xpNotifications ?? true,
+        entry.xpNotifications ?? false,
       ],
     );
   }

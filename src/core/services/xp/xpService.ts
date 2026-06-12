@@ -83,7 +83,7 @@ class XPService extends EventEmitter<XPServiceEvents> {
 
     // Cooldown check
     if (existing && (now - existing.lastActionAt) < XP_COOLDOWN_MS) {
-      return { awarded: false, levelUp: null, xpNotifications: existing?.xpNotifications ?? true, keywordBonus: 0 };
+      return { awarded: false, levelUp: null, xpNotifications: existing?.xpNotifications ?? false, keywordBonus: 0 };
     }
 
     let earnedXp = XP_BASE + Math.floor(Math.random() * XP_VARIANCE);
@@ -117,7 +117,7 @@ class XPService extends EventEmitter<XPServiceEvents> {
       level: newLevel,
       lastActionAt: now,
       updatedAt: now,
-      xpNotifications: existing?.xpNotifications ?? true,
+      xpNotifications: existing?.xpNotifications ?? false,
     };
 
     await this.persistence.upsertEntry(entry);
@@ -133,10 +133,10 @@ class XPService extends EventEmitter<XPServiceEvents> {
         newLevel,
         xp: newXp,
       });
-      return { awarded: true, levelUp: levelUpInfo, xpNotifications: entry.xpNotifications ?? true, keywordBonus };
+      return { awarded: true, levelUp: levelUpInfo, xpNotifications: entry.xpNotifications ?? false, keywordBonus };
     }
 
-    return { awarded: true, levelUp: null, xpNotifications: entry.xpNotifications ?? true, keywordBonus };
+    return { awarded: true, levelUp: null, xpNotifications: entry.xpNotifications ?? false, keywordBonus };
   }
 
   /** Get a user's XP entry. */
@@ -204,7 +204,7 @@ class XPService extends EventEmitter<XPServiceEvents> {
       level: newLevel,
       lastActionAt: existing?.lastActionAt ?? now,
       updatedAt: now,
-      xpNotifications: existing?.xpNotifications ?? true,
+      xpNotifications: existing?.xpNotifications ?? false,
     };
 
     await this.persistence.upsertEntry(entry);
@@ -241,7 +241,7 @@ class XPService extends EventEmitter<XPServiceEvents> {
       level: newLevel,
       lastActionAt: existing?.lastActionAt ?? now,
       updatedAt: now,
-      xpNotifications: existing?.xpNotifications ?? true,
+      xpNotifications: existing?.xpNotifications ?? false,
     };
 
     await this.persistence.upsertEntry(entry);
