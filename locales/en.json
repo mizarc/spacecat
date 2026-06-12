@@ -224,7 +224,7 @@
       "footer": "Top 10"
     },
     "xp": {
-      "levelUp": "🎉 **Level Up!** You're now **level {level}**! (+{earnedXp} XP)",
+      "levelUp": "🎉 **Level Up!** You're now **level {level}**!",
       "guildOnly": "❌ This command can only be used in a server.",
       "helpTitle": "🛠️ XP System Management",
       "helpDescription": "**Subcommands:**\n`xp set <user> <amount>` — Set a user's XP (admin)\n`xp add <user> <amount>` — Add XP to a user (admin)\n`xp globalnotify [on/off]` — Toggle server announcements (admin)\n`xp bonus add <word> <xp>` — Add keyword bonus (admin)\n`xp bonus remove <word>` — Remove keyword bonus (admin)\n`xp bonus list` — List all keyword bonuses",

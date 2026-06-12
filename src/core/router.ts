@@ -123,7 +123,6 @@ export async function awardMessageXp(message: UnifiedMessage): Promise<void> {
     if (guildConfig.levelUpMessages) {
       await message.reply(t('commands.xp.levelUp', {
         level: result.levelUp.newLevel,
-        earnedXp: result.levelUp.earnedXp,
       }));
     }
   }
