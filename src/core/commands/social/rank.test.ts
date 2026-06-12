@@ -9,7 +9,7 @@ vi.mock('../../services/xp/xpService.js', () => ({
     getMemberCount: vi.fn(),
     awardXp: vi.fn(),
   },
-  xpForLevel: vi.fn((level: number) => level * (level + 1) / 2 * 100),
+  xpForLevel: vi.fn((level: number) => (level - 1) * level / 2 * 100),
 }));
 
 describe('RankCommand', () => {
@@ -77,7 +77,7 @@ describe('RankCommand', () => {
     expect(reply.embeds[0].description).toContain('Level 3');
   });
 
-  it('should display zero-level stats for new users', async () => {
+  it('should display level 1 stats for new users', async () => {
     vi.mocked(xpService.getEntry).mockResolvedValue(null);
     vi.mocked(xpService.getUserRank).mockResolvedValue(null);
     vi.mocked(xpService.getMemberCount).mockResolvedValue(10);
@@ -85,7 +85,7 @@ describe('RankCommand', () => {
     await RankCommand.execute(mockMessage, []);
 
     const reply = mockMessage.reply.mock.calls[0][0];
-    expect(reply.embeds[0].description).toContain('Level 0');
+    expect(reply.embeds[0].description).toContain('Level 1');
     expect(reply.embeds[0].color).toBe(0x999999);
   });
 });

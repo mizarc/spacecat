@@ -12,23 +12,25 @@ const XP_VARIANCE = 10;
 
 /**
  * Total XP required to reach a given level (triangular number formula).
+ * Levels are 1-based: level 1 requires 0 XP.
  *
- *   level 0 → 1:  100 XP
- *   level 1 → 2:  200 XP  (cumulative  300)
- *   level 2 → 3:  300 XP  (cumulative  600)
- *   level 3 → 4:  400 XP  (cumulative 1000)
- *   level 4 → 5:  500 XP  (cumulative 1500)
+ *   level 1 → 2:   100 XP
+ *   level 2 → 3:   200 XP  (cumulative  300)
+ *   level 3 → 4:   300 XP  (cumulative  600)
+ *   level 4 → 5:   400 XP  (cumulative 1000)
+ *   level 5 → 6:   500 XP  (cumulative 1500)
  */
 export function xpForLevel(level: number): number {
-  return level * (level + 1) / 2 * 100;
+  return (level - 1) * level / 2 * 100;
 }
 
 /**
  * Derive the current level from a total XP amount.
+ * Returns 1 for users with 0 XP.
  */
 export function levelFromXp(xp: number): number {
-  // Inverse of triangular formula: level = floor((sqrt(1 + 8*xp/100) - 1) / 2)
-  return Math.floor((Math.sqrt(1 + 8 * xp / 100) - 1) / 2);
+  // Inverse of triangular formula: level = floor((sqrt(1 + 8*xp/100) - 1) / 2) + 1
+  return Math.floor((Math.sqrt(1 + 8 * xp / 100) - 1) / 2) + 1;
 }
 
 export interface XPLevelUpEvent {
@@ -104,7 +106,7 @@ class XPService extends EventEmitter<XPServiceEvents> {
 
     const previousXp = existing?.xp ?? 0;
     const newXp = previousXp + earnedXp;
-    const oldLevel = existing?.level ?? 0;
+    const oldLevel = levelFromXp(previousXp);
     const newLevel = levelFromXp(newXp);
 
     const entry: XPEntry = {
@@ -190,7 +192,7 @@ class XPService extends EventEmitter<XPServiceEvents> {
     xp: number,
   ): Promise<{ xp: number; level: number; oldLevel: number }> {
     const existing = await this.persistence.getEntry(guildId, userId);
-    const oldLevel = existing?.level ?? 0;
+    const oldLevel = levelFromXp(existing?.xp ?? 0);
     const newLevel = levelFromXp(xp);
     const now = Date.now();
 
@@ -227,7 +229,7 @@ class XPService extends EventEmitter<XPServiceEvents> {
     const existing = await this.persistence.getEntry(guildId, userId);
     const previousXp = existing?.xp ?? 0;
     const newXp = previousXp + amount;
-    const oldLevel = existing?.level ?? 0;
+    const oldLevel = levelFromXp(previousXp);
     const newLevel = levelFromXp(newXp);
     const now = Date.now();
 

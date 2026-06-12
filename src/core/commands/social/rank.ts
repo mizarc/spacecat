@@ -36,7 +36,7 @@ export const RankCommand: BotCommand = {
     const rank = await xpService.getUserRank(guildId, targetUserId);
     const memberCount = await xpService.getMemberCount(guildId);
 
-    const level = entry?.level ?? 0;
+    const level = entry?.level ?? 1;
     const xp = entry?.xp ?? 0;
     const currentLevelXp = xpForLevel(level);
     const nextLevelXp = xpForLevel(level + 1);
@@ -63,7 +63,7 @@ export const RankCommand: BotCommand = {
     const embed: ReplyEmbed = {
       title: t('commands.rank.title', { username: targetUsername }),
       description,
-      color: level > 0 ? 0x5865f2 : 0x999999,
+      color: entry ? 0x5865f2 : 0x999999,
     };
 
     await message.reply({ content: '', embeds: [embed] });
