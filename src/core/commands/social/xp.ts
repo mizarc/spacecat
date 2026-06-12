@@ -7,10 +7,13 @@ export const XpCommand: BotCommand = {
   description: 'XP and leveling system management.',
   category: 'social',
   parameters: [
-    { name: 'subcommand', description: 'Subcommand: set, add, notify, guild, bonus', type: 'string', required: true },
+    { name: 'subcommand', description: 'Subcommand: set, add, globalnotify, bonus', type: 'string',
+      required: true },
     { name: 'target', description: 'User mention/ID or on/off', type: 'string', required: false },
-    { name: 'value', description: 'XP amount, keyword, or on/off', type: 'string', required: false },
-    { name: 'keyword_amount', description: 'XP amount for keyword bonus', type: 'integer', required: false },
+    { name: 'value', description: 'XP amount, keyword, or on/off', type: 'string',
+      required: false },
+    { name: 'keyword_amount', description: 'XP amount for keyword bonus', type: 'integer',
+      required: false },
   ],
   async execute(message, args) {
     const guildId = message.guildId;
@@ -35,23 +38,19 @@ export const XpCommand: BotCommand = {
     }
 
     switch (sub) {
-      // ── User notify toggle ──────────────────────────────────────────────
-      case 'notify':
-        return handleNotify(message, args.slice(1));
+      // Global notify subcommand
+      case 'globalnotify':
+        return handleGlobalNotify(message, args.slice(1));
 
-      // ── Guild toggle ───────────────────────────────────────────────────
-      case 'guild':
-        return handleGuild(message, args.slice(1));
-
-      // ── Admin: set XP ──────────────────────────────────────────────────
+      // Set subcommand
       case 'set':
         return handleSet(message, args.slice(1));
 
-      // ── Admin: add XP ──────────────────────────────────────────────────
+      // Add subcommand
       case 'add':
         return handleAdd(message, args.slice(1));
 
-      // ── Bonus subcommands ──────────────────────────────────────────────
+      // Bonus subcommand
       case 'bonus':
         return handleBonus(message, args.slice(1));
 
@@ -61,40 +60,7 @@ export const XpCommand: BotCommand = {
   },
 };
 
-// ── Notify ───────────────────────────────────────────────────────────────────
-
-async function handleNotify(message: any, args: string[]) {
-  const guildId = message.guildId!;
-  const entry = await xpService.getEntry(guildId, message.author.id);
-  const current = entry?.xpNotifications ?? true;
-
-  if (args.length === 0) {
-    const status = current ? t('commands.xp.enabled') : t('commands.xp.disabled');
-    await message.reply(t('commands.xp.notifyCurrent', { status }));
-    return;
-  }
-
-  const arg = args[0]!.toLowerCase();
-  if (arg !== 'on' && arg !== 'off') {
-    await message.reply(t('commands.xp.invalidToggle'));
-    return;
-  }
-
-  const enabled = arg === 'on';
-  if (enabled === current) {
-    const status = t(`commands.xp.${enabled ? 'enabled' : 'disabled'}`);
-    await message.reply(t('commands.xp.notifyNoChange', { status }));
-    return;
-  }
-
-  await xpService.setXpNotifications(guildId, message.author.id, enabled);
-  const status = t(`commands.xp.${enabled ? 'enabled' : 'disabled'}`);
-  await message.reply(t('commands.xp.notifyUpdated', { status }));
-}
-
-// ── Guild ────────────────────────────────────────────────────────────────────
-
-async function handleGuild(message: any, args: string[]) {
+async function handleGlobalNotify(message: any, args: string[]) {
   const guildId = message.guildId!;
   const config = await xpService.getGuildConfig(guildId);
 
@@ -102,7 +68,7 @@ async function handleGuild(message: any, args: string[]) {
     const status = config.levelUpMessages
       ? t('commands.xp.enabled')
       : t('commands.xp.disabled');
-    await message.reply(t('commands.xp.guildCurrent', { status }));
+    await message.reply(t('commands.xp.globalnotifyCurrent', { status }));
     return;
   }
 
@@ -124,16 +90,14 @@ async function handleGuild(message: any, args: string[]) {
   const enabled = arg === 'on';
   if (enabled === config.levelUpMessages) {
     const status = t(`commands.xp.${enabled ? 'enabled' : 'disabled'}`);
-    await message.reply(t('commands.xp.guildNoChange', { status }));
+    await message.reply(t('commands.xp.globalnotifyNoChange', { status }));
     return;
   }
 
   await xpService.setGuildConfig(guildId, { levelUpMessages: enabled });
   const status = t(`commands.xp.${enabled ? 'enabled' : 'disabled'}`);
-  await message.reply(t('commands.xp.guildUpdated', { status }));
+  await message.reply(t('commands.xp.globalnotifyUpdated', { status }));
 }
-
-// ── Admin: Set XP ────────────────────────────────────────────────────────────
 
 async function handleSet(message: any, args: string[]) {
   // Permission check
@@ -164,8 +128,6 @@ async function handleSet(message: any, args: string[]) {
   }));
 }
 
-// ── Admin: Add XP ────────────────────────────────────────────────────────────
-
 async function handleAdd(message: any, args: string[]) {
   // Permission check
   if (!await isAdmin(message)) return;
@@ -195,8 +157,6 @@ async function handleAdd(message: any, args: string[]) {
     levelNote: levelChanged ? t('commands.xp.levelChanged', { level: String(result.level) }) : '',
   }));
 }
-
-// ── Bonus ────────────────────────────────────────────────────────────────────
 
 async function handleBonus(message: any, args: string[]) {
   const sub = args[0]?.toLowerCase();
@@ -245,8 +205,6 @@ async function handleBonus(message: any, args: string[]) {
 
   await message.reply(t('commands.xp.unknownSubcommand', { sub }));
 }
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Check if the message author has Manage Messages permissions. */
 async function isAdmin(message: any): Promise<boolean> {
