@@ -62,5 +62,5 @@ export const LeaderboardCommand: BotCommand = {
 
 /** Minimal markdown escaping to prevent formatting exploits in display names. */
 function escapeMarkdown(text: string): string {
-  return text.replace(/[_*~`|>]/g, '\\$&');
+  return text.replace(/[\\_*~`|>]/g, '\\$&');
 }
