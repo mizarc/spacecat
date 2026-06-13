@@ -258,6 +258,9 @@
       "enabled": "ON",
       "disabled": "OFF"
     },
+    "neofetch": {
+      "guildOnly": "❌ This command can only be used in a community."
+    },
     "help": {
       "title": "📋 Help",
       "listItem": "`!{name}` — {description}",
